@@ -1,0 +1,197 @@
+/*
+ * By Fawad Shahzad ID 18265693
+ */
+
+
+import java.util.*;
+import java.io.File;  // Import the File class
+import java.io.IOException;  // Import the IOException class to handle errors
+import java.io.FileWriter;   // Import the FileWriter class
+import java.io.FileNotFoundException;  // Import this class to handle errors
+
+public class OwnerClass extends PropertyClass {
+	private int id;
+	private  String name;
+	private  int age;
+	private List<PropertyClass> properties=new ArrayList<PropertyClass>();
+	
+	public OwnerClass() {
+		
+	}
+	
+	public void registerProperty() {
+		String [] data = new String[100];
+		//set for getting input values
+        Scanner sc= new Scanner(System.in);
+        //for random values.
+        Random rand = new Random();
+        String address,postCode,location;
+        double marketValue;
+        System.out.println("Property Owner:");
+        this.name = sc.nextLine();
+        System.out.println("Address:");
+        address = sc.nextLine();     
+        System.out.println("PostCode/EirCode:");
+        postCode = sc.nextLine();
+        System.out.println("Market Value:");
+        marketValue = sc.nextDouble();
+        System.out.println("Location Category:");        
+        location = sc.nextLine();
+        location = sc.nextLine();
+        this.properties.add(new PropertyClass(address,postCode,marketValue,location));
+        System.out.println(this.properties.get(0).getLocationCategory());
+          
+        //Reading a file
+        int i=0;
+	      try {
+	      File myObj = new File("data.txt");
+	      Scanner myReader = new Scanner(myObj);
+	      while (myReader.hasNextLine()) {
+	        data[i] = myReader.nextLine();	 
+	        i++;
+	      }
+	      myReader.close();
+	    } catch (FileNotFoundException e) {
+	      System.out.println("An error occurred.");
+	      e.printStackTrace();
+	    }
+	      
+	    data[i] = this.name+","+this.properties.get(0).getAddress()+","+this.properties.get(0).getEirCode()+","+this.properties.get(0).getValue()+","+
+	    			this.properties.get(0).getLocationCategory()+"\n";
+	      
+	      
+	      //writing in the file
+        try {
+            FileWriter myWriter = new FileWriter("data.txt");
+            for(int j=0;j<=i;j++) {
+            	myWriter.write(data[j]);
+            }
+            
+            myWriter.close(); 
+            System.out.println("Data is write");
+          } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+          }
+          return;        
+	}
+	
+	public void unRegisterProperty() {
+		String line;
+		//set for getting input values
+        Scanner sc= new Scanner(System.in);
+        //for random values.
+        Random rand = new Random();
+        String owner,postCode,address;
+        System.out.println("Enter Property Details you want to unregister:");
+        System.out.println("Property Owner:");
+        owner = sc.next();
+        System.out.println("PostCode/EirCode:");   
+        postCode = sc.next();
+        System.out.println("Address:");
+        address = sc.next();
+        
+        String own="";
+        String add = "";
+        String postCd = "";
+        int indexer = 0;
+        //Reading a file
+	      try {	    	  
+	    	  int index = 0,runner = 0;
+	      File myObj = new File("data.txt");
+	      Scanner myReader = new Scanner(myObj);
+	      while (myReader.hasNextLine()) {
+	        line = myReader.nextLine();
+	        index = 0;
+	        for(int k=0;k<line.length();k++) {
+	        	if(index == 0) {
+	        		if(line.charAt(k)==',') {
+		        		own = line.substring(0,k);
+		        		runner = k;
+		        	}
+	        		index++;
+	        	}
+	        	if(index==1) {
+	        		if(line.charAt(k)==',') {
+		        		add = line.substring(runner,k);
+		        		runner = k;
+		        	}
+	        		index++;
+	        	}
+	        	if(index == 2) {
+	        		if(line.charAt(k)==',') {
+		        		postCd = line.substring(runner,k);
+		        		runner = k;
+		        	}
+	        		index++;
+	        	}
+	        }
+	        
+	        if(owner.equals(own)&&postCode.equals(postCd)&&address.equals(add)) {
+	        	System.out.println(indexer);
+	        	break;
+	        }
+	       indexer++;      
+	      }
+	      myReader.close();
+	    } catch (FileNotFoundException e) {
+	      System.out.println("An error occurred.");
+	      e.printStackTrace();
+	    }
+       
+	}
+	
+	public void viewPorperties() {
+		  //Reading a file
+	      try {
+	      File myObj = new File("data.txt");
+	      Scanner myReader = new Scanner(myObj);
+	      while (myReader.hasNextLine()) {
+	        String data = myReader.nextLine();
+	        System.out.println(data);       
+	      }
+	      myReader.close();
+	    } catch (FileNotFoundException e) {
+	      System.out.println("An error occurred.");
+	      e.printStackTrace();
+	    }	      
+	}
+	
+	public void balanceSheet(int year) {
+		
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public List<PropertyClass> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(List<PropertyClass> properties) {
+		this.properties = properties;
+	}
+
+
+}
