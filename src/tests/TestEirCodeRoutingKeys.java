@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class TestEirCodeRoutingKeys {
     public static void main(String[] args) throws IOException {
         // open file input stream
-        BufferedReader reader = new BufferedReader(new FileReader("EircodeRoutingKeys.csv"));
+        BufferedReader reader = new BufferedReader(new FileReader("./src/data/EircodeRoutingKeys.csv"));
 
         // read file line by line
         String line = null;

@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Property {
+public class Property extends Taxable {
     private ArrayList<Owner> owners;
     private String address;
     private String eircode;
@@ -10,6 +10,7 @@ public class Property {
 
     public Property(ArrayList<Owner> owners, String address, String eircode, double estimatedMarketValue,
             LocationCatgeory locationCatgeory, boolean isPrincipalPrivateResidence) {
+        super();
         this.setOwners(owners);
         this.setAddress(address);
         this.setEircode(eircode);
