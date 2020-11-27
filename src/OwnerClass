@@ -18,7 +18,11 @@ public class OwnerClass extends PropertyClass {
 	public OwnerClass() {
 		
 	}
-	
+	public OwnerClass(int ownerId,String ownerName,int ownerAge) {
+		this.id = ownerId;
+		this.name = ownerName;
+		this.age = ownerAge;
+	}
 	public void registerProperty() {
 		String [] data = new String[100];
 		//set for getting input values
@@ -39,8 +43,10 @@ public class OwnerClass extends PropertyClass {
         location = sc.nextLine();
         location = sc.nextLine();
         this.properties.add(new PropertyClass(address,postCode,marketValue,location));
-        System.out.println(this.properties.get(0).getLocationCategory());
+        //System.out.println(this.properties.get(0).getLocationCategory());
           
+	  
+	  
         //Reading a file
         int i=0;
 	      try {
@@ -68,7 +74,7 @@ public class OwnerClass extends PropertyClass {
             }
             
             myWriter.close(); 
-            System.out.println("Data is write");
+            System.out.println("Property is regsitered sucessfully");
           } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
@@ -95,6 +101,7 @@ public class OwnerClass extends PropertyClass {
         String add = "";
         String postCd = "";
         int indexer = 0;
+	int pionter = 0;
         //Reading a file
 	      try {	    	  
 	    	  int index = 0,runner = 0;
@@ -103,32 +110,28 @@ public class OwnerClass extends PropertyClass {
 	      while (myReader.hasNextLine()) {
 	        line = myReader.nextLine();
 	        index = 0;
+		runner = 0;
+		
 	        for(int k=0;k<line.length();k++) {
-	        	if(index == 0) {
-	        		if(line.charAt(k)==',') {
-		        		own = line.substring(0,k);
-		        		runner = k;
-		        	}
-	        		index++;
-	        	}
-	        	if(index==1) {
-	        		if(line.charAt(k)==',') {
-		        		add = line.substring(runner,k);
-		        		runner = k;
-		        	}
-	        		index++;
-	        	}
-	        	if(index == 2) {
-	        		if(line.charAt(k)==',') {
-		        		postCd = line.substring(runner,k);
-		        		runner = k;
-		        	}
-	        		index++;
-	        	}
-	        }
-	        
+	        	if(index < 3) {	        		
+	        		if(line.charAt(k)==44) {
+	        			if(index==0) {
+	        				own = line.substring(0,k);			        		
+	        			}		        		
+		        		if(index==1) {
+		        			add = line.substring(runner,k);			        		
+		        		}
+		        		if(index==2) {
+		        			postCd = line.substring(runner,k);			        		
+			        		break;
+		        		}
+		        		runner = k+1;
+		        		index++;
+		        	}	        		
+	        	}	        	
+	        }	  
 	        if(owner.equals(own)&&postCode.equals(postCd)&&address.equals(add)) {
-	        	System.out.println(indexer);
+	        	pointer = indexer;
 	        	break;
 	        }
 	       indexer++;      
@@ -138,27 +141,140 @@ public class OwnerClass extends PropertyClass {
 	      System.out.println("An error occurred.");
 	      e.printStackTrace();
 	    }
-       
-	}
-	
-	public void viewPorperties() {
-		  //Reading a file
+	      
+	      
+	      
+	      //------------------------------
+	    String[] newData = new String[100];
+	    
+	    int g=0,r=0,inputRunner = 0;
+	    //Reading a file
 	      try {
 	      File myObj = new File("data.txt");
 	      Scanner myReader = new Scanner(myObj);
 	      while (myReader.hasNextLine()) {
-	        String data = myReader.nextLine();
-	        System.out.println(data);       
+	    	if(r!=pointer) {
+	    		newData[g] = myReader.nextLine()+"\n";	    		
+	    		inputRunner = g;	    		
+	    		g++;
+	    	}
+	    	else {
+	    		myReader.nextLine();
+	    	}
+	    	
+	    	r++;     
 	      }
 	      myReader.close();
 	    } catch (FileNotFoundException e) {
 	      System.out.println("An error occurred.");
 	      e.printStackTrace();
-	    }	      
+	    }	
+	    
+	      if(inputRunner>0) {
+	    	//writing in the file
+	          try {
+	              FileWriter myWriter = new FileWriter("data.txt");
+	              for(int j=0;j<=inputRunner;j++) {
+	              	myWriter.write(newData[j]);
+	              }
+	              
+	              myWriter.close(); 
+	              System.out.println("Property is unregistered successfully.");
+	            } catch (IOException e) {
+	              System.out.println("An error occurred.");
+	              e.printStackTrace();
+	            }  
+	      }	    
+	     
+       
 	}
 	
-	public void balanceSheet(int year) {
-		
+	public void viewPorperties() {
+			String line;
+	       String own="";
+	        String add = "";
+	        String postCd = "";
+	        String value = "";
+	        String location = "";	
+	        int checker = 0;
+	        //Reading a file        
+		      try {	    	  
+		    	  int index = 0,runner = 0;
+		      File myObj = new File("data.txt");
+		      Scanner myReader = new Scanner(myObj);
+		      while (myReader.hasNextLine()) {
+		        line = myReader.nextLine();
+		        index = 0;
+		        runner = 0;
+		        for(int k=0;k<line.length();k++) {
+		        	if(index < 4) {	        		
+		        		if(line.charAt(k)==44) {
+		        			if(index==0) {
+		        				own = line.substring(0,k);			        		
+		        			}		        		
+			        		if(index==1) {
+			        			add = line.substring(runner,k);			        		
+			        		}
+			        		if(index==2) {
+			        			postCd = line.substring(runner,k);				        		
+			        		}
+			        		if(index==3) {
+			        			value = line.substring(runner,k);   			
+			        		}			        					        		
+			        		runner = k+1;
+			        		index++;
+			        	}	        	
+		        		if(index==4) {
+		        			location = line.substring(runner,line.length());			        			
+		        			break;
+		        		}
+		        	}	        	
+		        }
+		        checker++;
+		        System.out.println("Property Number: "+checker+"\nOwner Name: "+own+"\nAddress: "+add+"\nPost Code : "+postCd+"\nMarket Value: "+value+"\nLocation Category: "+location);
+		      }
+		      myReader.close();
+		    } catch (FileNotFoundException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		    }
+	}
+	
+	public void balanceSheet() {
+		String line;
+		String salesId="";	
+        String payment = "";                
+        //Reading a file        
+	      try {	    	  
+	    	  int index = 0,runner = 0;
+	      File myObj = new File("paymentRecord.txt");
+	      Scanner myReader = new Scanner(myObj);
+	      while (myReader.hasNextLine()) {
+	        line = myReader.nextLine();
+	        index = 0;
+	        runner = 0;
+	        for(int k=0;k<line.length();k++) {
+	        	if(index < 6) {	        		
+	        		if(line.charAt(k)==44) {
+	        			if(index==0) {
+	        				salesId = line.substring(0,k);			        		
+	        			}	        			
+		        		runner = k+1;
+		        		index++;
+		        	}	        	
+	        		if(index==6) {
+	        			payment = line.substring(runner,line.length());			        			
+	        			break;
+	        		}
+	        	}	        	
+	        }	        
+	        System.out.println("\nSales Id: "+salesId+"\nPayment: "+payment);
+	      }
+	      myReader.close();
+	    } catch (FileNotFoundException e) {
+	      System.out.println("An error occurred.");
+	      e.printStackTrace();
+	    }
 	}
 
 	public int getAge() {
