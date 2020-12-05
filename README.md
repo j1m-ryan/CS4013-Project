@@ -29,6 +29,5 @@ we display few things on terminal:
 
 on BlueJ program
 
-- open "Early prototype" folder
-- download files "from blue j files" folder
-- run tester.java
+- download files "src" folder
+- run "LoadAndShowData.java"
