@@ -2,6 +2,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,8 +27,9 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 public class App extends Application {
-    Scene scnWelcome, scnAbout, scnLogin, scnSignUp, scnDepLogin, scnDash, scnRegProp, scnPayTax, scnViewChoice,
-            scnViewProp, scnPrevPayments;
+    Scene scnWelcome, scnAbout, scnLogin, scnSignUp, scnDepLogin, scnDash, scnDepDash, scnRegProp, scnPayTax,
+            scnViewChoice, scnViewProp, scnPrevPayments, scnOverdueProp, scnPropTaxStat, scnPayData, scnYearBalance,
+            scnPropBalance, scnOverduePropTable, scnPropPayment;
 
     public static void main(String args[]) {
         launch(args);
@@ -38,18 +40,10 @@ public class App extends Application {
         primaryStage.setTitle("Property Management System");
         primaryStage.getIcons().add(new Image("file:house.png"));
         scnWelcome = makeWelcomeScene(primaryStage);
-        scnAbout = makeAboutScene(primaryStage);
-        scnLogin = makeLoginScene(primaryStage);
-        scnSignUp = makeSignUpScene(primaryStage);
-        scnDepLogin = makeDepLoginScene(primaryStage);
-        scnDash = makeDashScene(primaryStage);
-        scnRegProp = makeRegPropScene(primaryStage);
-        scnPayTax = makePayTaxScene(primaryStage);
-        scnViewProp = makeViewPropScene(primaryStage);
-        scnViewChoice = makeViewPropChoice(primaryStage);
-        scnPrevPayments = makePrevPayments(primaryStage);
         primaryStage.setScene(scnWelcome);
         primaryStage.show();
+        primaryStage.setMinWidth(700);
+        primaryStage.setMinHeight(500);
     }
 
     public Scene makeWelcomeScene(Stage primaryStage) throws FileNotFoundException {
@@ -64,17 +58,21 @@ public class App extends Application {
         ImageView imageView = new ImageView();
         imageView.setImage(imgHouse);
         imageView.setPreserveRatio(true);
-
-        btnAbout.setOnAction(e -> primaryStage.setScene(scnAbout));
-        btnLogin.setOnAction(e -> primaryStage.setScene(scnLogin));
+        btnAbout.setOnAction(e -> {
+            scnAbout = makeAboutScene(primaryStage);
+            primaryStage.setScene(scnAbout);
+        });
+        btnLogin.setOnAction(e -> {
+            scnLogin = makeLoginScene(primaryStage);
+            primaryStage.setScene(scnLogin);
+        });
         btnQuit.setOnAction(e -> System.exit(1));
-
         imageView.setX(20);
         imageView.setY(20);
         imageView.setFitWidth(100);
         imageView.setPreserveRatio(true);
         bp.setCenter(imageView);
-        return new Scene(bp, 600, 400);
+        return new Scene(bp);
     }
 
     public Scene makeAboutScene(Stage primaryStage) {
@@ -83,11 +81,12 @@ public class App extends Application {
         Text text1 = new Text(
                 "Our software company Tax Ireland Solutions Ltd under contract from the Department of Environment has developed this Property Charge Management System. The system will allow property owners to register each of their properties and to pay the property tax due for the properties. Property tax is a yearly tax on a property and it is due to be paid on Jan 1st each year. Property owners are able to view a list of their properties and the tax that is due currently per property and also any overdue tax (hasn't been paid for a previous year) and are able to query specific previous years and get a balancing statement for any particular year or property. The system maintains a record of all payments of the property charge on a yearly basis.");
         TextFlow textAbout = new TextFlow(text1);
-        btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
+        btnBack.setOnAction(e -> {
+            primaryStage.setScene(scnWelcome);
+        });
         bp.setCenter(textAbout);
         BorderPane.setMargin(textAbout, new Insets(12, 12, 12, 12));
-
-        return new Scene(bp, 600, 400);
+        return new Scene(bp);
     }
 
     public Scene makeLoginScene(Stage primaryStage) {
@@ -96,7 +95,6 @@ public class App extends Application {
         Button btnLogin = new Button("Login");
         Button btnDepLogin = new Button("Department Login");
         BorderPane bp = makeNewBorderPaneWithBtnBar("Login", btnBack, btnSignUp, btnLogin, btnDepLogin);
-
         GridPane grid = makeNewGridPane();
         Label lblPPSN = new Label("PPS Number");
         grid.add(lblPPSN, 0, 1);
@@ -107,19 +105,28 @@ public class App extends Application {
         PasswordField pwBox = new PasswordField();
         grid.add(pwBox, 1, 2);
         bp.setCenter(grid);
-        btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
-        btnLogin.setOnAction(e -> primaryStage.setScene(scnDash));
-        btnSignUp.setOnAction(e -> primaryStage.setScene(scnSignUp));
-        btnDepLogin.setOnAction(e -> primaryStage.setScene(scnDepLogin));
-
-        return new Scene(bp, 600, 400);
+        btnBack.setOnAction(e -> {
+            primaryStage.setScene(scnWelcome);
+        });
+        btnLogin.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
+        btnSignUp.setOnAction(e -> {
+            scnSignUp = makeSignUpScene(primaryStage);
+            primaryStage.setScene(scnSignUp);
+        });
+        btnDepLogin.setOnAction(e -> {
+            scnDepLogin = makeDepLoginScene(primaryStage);
+            primaryStage.setScene(scnDepLogin);
+        });
+        return new Scene(bp);
     }
 
     public Scene makeSignUpScene(Stage primaryStage) {
         Button btnBack = new Button("Cancel");
         Button btnSignUp = new Button("Sign Up");
         BorderPane bp = makeNewBorderPaneWithBtnBar("Sign up", btnBack, btnSignUp);
-
         GridPane grid = makeNewGridPane();
         Label lblName = new Label("Name");
         grid.add(lblName, 0, 1);
@@ -133,13 +140,12 @@ public class App extends Application {
         grid.add(lblPW, 0, 3);
         PasswordField pwBox = new PasswordField();
         grid.add(pwBox, 1, 3);
-
         bp.setCenter(grid);
 
         btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
         // btnSignUp.setOnAction(e -> primaryStage.setScene(scnSignUp));;
 
-        return new Scene(bp, 600, 400);
+        return new Scene(bp);
     }
 
     public Scene makeDepLoginScene(Stage primaryStage) {
@@ -158,9 +164,12 @@ public class App extends Application {
         bp.setCenter(grid);
 
         btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
-        // btnLogin.setOnAction(e -> primaryStage.setScene(scnLogin));
+        btnLogin.setOnAction(e -> {
+            scnDepDash = makeDepDashScene(primaryStage);
+            primaryStage.setScene(scnDepDash);
+        });
 
-        return new Scene(bp, 600, 400);
+        return new Scene(bp);
     }
 
     public Scene makeDashScene(Stage primaryStage) {
@@ -207,10 +216,8 @@ public class App extends Application {
         Button btnPrevPayment = new Button("Previous Payments");
         Button btnConfirmYear = new Button("Confirm");
         Button btnConfirmProperty = new Button("Confirm");
-        buttons.add(btnRegProperty);
-        buttons.add(btnPayTax);
-        buttons.add(btnViewProperty);
-        buttons.add(btnPrevPayment);
+        buttons.addAll(
+                new ArrayList<Button>(Arrays.asList(btnRegProperty, btnPayTax, btnViewProperty, btnPrevPayment)));
         for (Button b : buttons) {
             b.setMinWidth(150);
         }
@@ -224,15 +231,88 @@ public class App extends Application {
         bottomGrid.add(btnConfirmProperty, 2, 1);
 
         btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
-        btnRegProperty.setOnAction(e -> primaryStage.setScene(scnRegProp));
-        btnPayTax.setOnAction(e -> primaryStage.setScene(scnPayTax));
-        btnPrevPayment.setOnAction(e -> primaryStage.setScene(scnPrevPayments));
-        // btnConfirmYear.setOnAction(e -> primaryStage.setScene(scnWelcome));
-        // btnConfirmProperty.setOnAction(e -> primaryStage.setScene(scnWelcome));
-        btnViewProperty.setOnAction(e -> primaryStage.setScene(scnViewChoice));
+        btnRegProperty.setOnAction(e -> {
+            scnRegProp = makeRegPropScene(primaryStage);
+            primaryStage.setScene(scnRegProp);
+        });
+        btnPayTax.setOnAction(e -> {
+            scnPayTax = makePayTaxScene(primaryStage);
+            primaryStage.setScene(scnPayTax);
+        });
+        btnPrevPayment.setOnAction(e -> {
+            scnPrevPayments = makePrevPayments(primaryStage);
+            primaryStage.setScene(scnPrevPayments);
+        });
+        btnConfirmYear.setOnAction(e -> {
+            if (cBoxYear.getValue() == null)
+                return;
+            scnYearBalance = makeYearlyBalancingStatementScene(primaryStage, cBoxYear.getValue());
+            primaryStage.setScene(scnYearBalance);
+        });
+        btnConfirmProperty.setOnAction(e -> {
+            if (cBoxEirCcde.getValue() == null)
+                return;
+            scnPropBalance = makePropBalancingStatementScene(primaryStage, cBoxEirCcde.getValue());
+            primaryStage.setScene(scnPropBalance);
+        });
+        btnViewProperty.setOnAction(e -> {
+            scnViewChoice = makeViewPropChoice(primaryStage);
+            primaryStage.setScene(scnViewChoice);
+        });
         bp.setCenter(bpCENTER);
         bp.setTop(bpTOP);
-        return new Scene(bp, 600, 400);
+
+        return new Scene(bp);
+    }
+
+    public Scene makeDepDashScene(Stage primaryStage) {
+        Button btnBack = new Button("Logout");
+        BorderPane bp = makeNewBorderPaneWithBtnBar("Department Dashboard", btnBack);
+        GridPane grid = makeNewGridPane();
+        Label lblWorkID = new Label("Work ID:");
+        HBox hboxTitleBar = ((HBox) bp.getTop());
+        Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
+        BorderPane bpTOP = new BorderPane();
+        bpTOP.setCenter(lblTitle);
+        bpTOP.setRight(lblWorkID);
+        BorderPane.setMargin(bpTOP, new Insets(12, 12, 12, 12));
+        bp.setCenter(grid);
+
+        BorderPane bpCENTER = new BorderPane();
+        GridPane btnGrid = makeNewGridPane();
+        GridPane bottomGrid = makeNewGridPane();
+        bpCENTER.setCenter(btnGrid);
+        bpCENTER.setBottom(bottomGrid);
+
+        ArrayList<Button> buttons = new ArrayList<>();
+        Button btnOverdueProp = new Button("View Overdue Properties");
+        Button btnPropTaxStat = new Button("Property Tax Statistics by Area");
+        Button btnPayData = new Button("View Property Tax Payment Data");
+        buttons.addAll(new ArrayList<Button>(Arrays.asList(btnOverdueProp, btnPropTaxStat, btnPayData)));
+        for (Button b : buttons) {
+            b.setMinWidth(250);
+        }
+
+        btnGrid.add(btnOverdueProp, 0, 0);
+        btnGrid.add(btnPropTaxStat, 0, 1);
+        btnGrid.add(btnPayData, 0, 2);
+
+        btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
+        btnOverdueProp.setOnAction(e -> {
+            scnOverdueProp = makeOverdueProp(primaryStage);
+            primaryStage.setScene(scnOverdueProp);
+        });
+        btnPropTaxStat.setOnAction(e -> {
+            scnPropTaxStat = makePropTaxStat(primaryStage);
+            primaryStage.setScene(scnPropTaxStat);
+        });
+        btnPayData.setOnAction(e -> {
+            scnPayData = makePayData(primaryStage);
+            primaryStage.setScene(scnPayData);
+        });
+        bp.setCenter(bpCENTER);
+        bp.setTop(bpTOP);
+        return new Scene(bp);
     }
 
     public Scene makeRegPropScene(Stage primaryStage) {
@@ -276,16 +356,25 @@ public class App extends Application {
         grid.add(chkPrincipalResidence, 1, 6);
 
         bp.setCenter(grid);
-        btnBack.setOnAction(e -> primaryStage.setScene(scnDash));
-        btnConfirm.setOnAction(e -> primaryStage.setScene(scnViewProp));
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
+        btnConfirm.setOnAction(e -> {
+            scnViewProp = makeViewPropScene(primaryStage);
+            primaryStage.setScene(scnViewProp);
+        });
 
-        return new Scene(bp, 600, 400);
+        return new Scene(bp);
     }
 
     public Scene makePayTaxScene(Stage primaryStage) {
         Button btnBack = new Button("Cancel");
         Button btnPay = new Button("Pay");
-        btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
 
         BorderPane bp = makeNewBorderPaneWithBtnBar("Pay Tax", btnBack, btnPay);
         GridPane grid = makeNewGridPane();
@@ -308,7 +397,7 @@ public class App extends Application {
         grid.add(payTextField, 1, 3);
 
         bp.setCenter(grid);
-        return new Scene(bp, 600, 400);
+        return new Scene(bp);
     }
 
     public Scene makeViewPropChoice(Stage primaryStage) {
@@ -316,9 +405,14 @@ public class App extends Application {
         Button btnConfirm = new Button("Confirm");
         Button btnViewProperty = new Button("All");
         BorderPane bp = makeNewBorderPaneWithBtnBar("View Properties", btnBack);
-        btnBack.setOnAction(e -> primaryStage.setScene(scnDash));
-        btnViewProperty.setOnAction(e -> primaryStage.setScene(scnViewProp));
-        // btnConfirm.setOnAction(e -> primaryStage.setScene(scnDash));
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
+        btnViewProperty.setOnAction(e -> {
+            scnViewProp = makeViewPropScene(primaryStage);
+            primaryStage.setScene(scnViewProp);
+        });
 
         GridPane btnGrid = makeNewGridPane();
 
@@ -326,7 +420,15 @@ public class App extends Application {
         Label lblViewByYear = new Label("View By Year:");
         ObservableList<String> optYears = FXCollections.observableArrayList("2020", "2019", "2018");
         final ComboBox<String> cBoxYear = new ComboBox<>(optYears);
-
+        btnConfirm.setOnAction(e -> {
+            if (cBoxYear.getValue() == null) {
+                return;
+            } else {
+                scnPropBalance = makeViewPropScene(primaryStage, cBoxYear.getValue());
+                primaryStage.setScene(scnPropBalance);
+            }
+            return;
+        });
         btnGrid.add(lblViewAll, 0, 0);
         btnGrid.add(btnViewProperty, 1, 0);
         btnGrid.add(lblViewByYear, 0, 2);
@@ -337,7 +439,7 @@ public class App extends Application {
         cBoxYear.setMinWidth(80);
 
         bp.setCenter(btnGrid);
-        return new Scene(bp, 600, 400);
+        return new Scene(bp);
     }
 
     public Scene makeViewPropScene(Stage primaryStage) {
@@ -345,15 +447,254 @@ public class App extends Application {
         BorderPane bp = makeBorderPaneWithBtnBarAndTable("My Properties", btnBack, "Eircode", "Address", "Owners",
                 "Value", "Tax Due", "Tax Overdue", "Total Owed");
         btnBack.setOnAction(e -> primaryStage.setScene(scnDash));
-        return new Scene(bp, 700, 400);
+        return new Scene(bp);
     }
 
     public Scene makePrevPayments(Stage primaryStage) {
         Button btnBack = new Button("Back");
         BorderPane bp = makeBorderPaneWithBtnBarAndTable("Pevious Payments", btnBack, "Eircode", "Address", "Owners",
                 "Value", "Tax Due", "Paid");
-        btnBack.setOnAction(e -> primaryStage.setScene(scnDash));
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
         return new Scene(bp, 600, 400);
+    }
+
+    public Scene makeOverdueProp(Stage primaryStage) {
+        Button btnBack = new Button("Back");
+        Button btnConfirm = new Button("Confirm");
+        BorderPane bp = makeNewBorderPaneWithBtnBar("Overdue Properties", btnBack);
+        btnBack.setOnAction(e -> {
+            scnDepDash = makeDepDashScene(primaryStage);
+            primaryStage.setScene(scnDepDash);
+        });
+        // Need to go back and check if prefix is valid using system manager
+        Label lblWorkID = new Label("Work ID:");
+        HBox hboxTitleBar = ((HBox) bp.getTop());
+        Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
+        BorderPane bpTOP = new BorderPane();
+        bpTOP.setCenter(lblTitle);
+        bpTOP.setRight(lblWorkID);
+        BorderPane.setMargin(bpTOP, new Insets(12, 12, 12, 12));
+        bp.setTop(bpTOP);
+
+        BorderPane bpCENTER = new BorderPane();
+        GridPane topGrid = makeNewGridPane();
+        bpCENTER.setTop(topGrid);
+
+        Text txtYear = new Text();
+        Text txtEircodePrefix = new Text();
+        txtYear.setText("Year:");
+        txtEircodePrefix.setText("Eircode Prefix (Optional):");
+        topGrid.add(txtYear, 0, 0);
+        topGrid.add(txtEircodePrefix, 0, 1);
+        TextField userTextField = new TextField();
+        topGrid.add(userTextField, 1, 1);
+
+        ObservableList<String> optYears = FXCollections.observableArrayList("2020", "2019", "2018");
+        final ComboBox<String> cBoxYear = new ComboBox<>(optYears);
+        topGrid.add(cBoxYear, 1, 0);
+        cBoxYear.setMinWidth(200);
+        btnConfirm.setOnAction(e -> {
+            if (cBoxYear.getValue() == null) {
+                return;
+            } else if (userTextField.getText() == null || userTextField.getText().trim().isEmpty()) {
+                scnPropBalance = makeOverduePropTableScene(primaryStage, cBoxYear.getValue());
+                primaryStage.setScene(scnPropBalance);
+            } else {
+                scnPropBalance = makeOverduePropTableScene(primaryStage, cBoxYear.getValue(), userTextField.getText());
+                primaryStage.setScene(scnPropBalance);
+            }
+            return;
+        });
+        topGrid.add(btnConfirm, 2, 1);
+        bp.setCenter(bpCENTER);
+        bp.setTop(bpTOP);
+
+        return new Scene(bp);
+    }
+
+    public Scene makeOverduePropTableScene(Stage primaryStage, String year) {
+        Button btnBack = new Button("Back");
+        String titleText = "View all overdue properties in " + year;
+        BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Eircode", "Address", "Owners", "Value",
+                "Tax Due");
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDepDash);
+        });
+        return new Scene(bp);
+    }
+
+    public Scene makeOverduePropTableScene(Stage primaryStage, String year, String eircode) {
+        Button btnBack = new Button("Back");
+        String eircodeLocation = "DEFAULT MUST CHANGE";
+        String titleText = "View all overdue properties in " + year + " at " + eircodeLocation;
+        BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Eircode", "Address", "Owners", "Value",
+                "Tax Due");
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDepDash);
+        });
+        return new Scene(bp);
+    }
+
+    public Scene makePropTaxStat(Stage primaryStage) {
+        Button btnBack = new Button("Back");
+        Button btnConfirm = new Button("Confirm");
+        BorderPane bp = makeNewBorderPaneWithBtnBar("Property Tax Statistics by Area", btnBack, btnConfirm);
+        /*
+         * btnConfirm.setOnAction(e -> {
+         * 
+         * });
+         */
+        btnBack.setOnAction(e -> {
+            scnDepDash = makeDepDashScene(primaryStage);
+            primaryStage.setScene(scnDepDash);
+        });
+        Label lblWorkID = new Label("Work ID:");
+        HBox hboxTitleBar = ((HBox) bp.getTop());
+        Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
+        BorderPane bpTOP = new BorderPane();
+        bpTOP.setCenter(lblTitle);
+        bpTOP.setRight(lblWorkID);
+        BorderPane.setMargin(bpTOP, new Insets(12, 12, 12, 12));
+        bp.setTop(bpTOP);
+
+        BorderPane bpCENTER = new BorderPane();
+        GridPane topGrid = makeNewGridPane();
+        bpCENTER.setTop(topGrid);
+
+        Text txtEircodePrefix = new Text();
+        txtEircodePrefix.setText("Eircode Prefix:");
+        topGrid.add(txtEircodePrefix, 0, 1);
+        TextField userTextField = new TextField();
+        topGrid.add(userTextField, 1, 1);
+        topGrid.add(btnConfirm, 2, 1);
+        bp.setCenter(bpCENTER);
+        bp.setTop(bpTOP);
+        return new Scene(bp);
+    }
+
+    public Scene makeViewPropPaymentTableByEircodeScene(Stage primaryStage, String eircode) {
+        Button btnBack = new Button("Back");
+        String titleText = "View all properties payment data for " + eircode;
+        BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Date", "Paid", "Owners", "Value");
+        btnBack.setOnAction(e -> {
+            scnPayData = makePayData(primaryStage);
+            primaryStage.setScene(scnPayData);
+        });
+        return new Scene(bp);
+    }
+
+    public Scene makeViewPropPaymentTableByPPSNScene(Stage primaryStage, String ppsn) {
+        Button btnBack = new Button("Back");
+        String titleText = "View all properties payment data for " + ppsn;
+        BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Date", "Ericode", "Paid", "Owners",
+                "Value");
+        btnBack.setOnAction(e -> {
+            scnPayData = makePayData(primaryStage);
+            primaryStage.setScene(scnPayData);
+        });
+        return new Scene(bp);
+    }
+
+    public Scene makePayData(Stage primaryStage) {
+        Button btnBack = new Button("Back");
+        Button btnConfirmEircode = new Button("Confirm Eircode");
+        Button btnConfirmPPS = new Button("Confirm PPS");
+        btnConfirmEircode.setMinWidth(150);
+        btnConfirmPPS.setMinWidth(150);
+        BorderPane bp = makeNewBorderPaneWithBtnBar("Get Property Tax Payment Data", btnBack, btnConfirmEircode,
+                btnConfirmPPS);
+        /*
+         * btnConfirm.setOnAction(e -> {
+         * 
+         * });
+         */
+
+        btnBack.setOnAction(e -> {
+            scnDepDash = makeDepDashScene(primaryStage);
+            primaryStage.setScene(scnDepDash);
+        });
+        Label lblWorkID = new Label("Work ID:");
+        HBox hboxTitleBar = ((HBox) bp.getTop());
+        Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
+        BorderPane bpTOP = new BorderPane();
+        bpTOP.setCenter(lblTitle);
+        bpTOP.setRight(lblWorkID);
+        BorderPane.setMargin(bpTOP, new Insets(12, 12, 12, 12));
+        bp.setTop(bpTOP);
+
+        BorderPane bpCENTER = new BorderPane();
+        GridPane grid = makeNewGridPane();
+        bpCENTER.setCenter(grid);
+
+        Text txtEircode = new Text();
+        txtEircode.setText("By Eircode:");
+        grid.add(txtEircode, 0, 1);
+        TextField eircodeTextField = new TextField();
+        grid.add(eircodeTextField, 1, 1);
+        grid.add(btnConfirmEircode, 2, 1);
+
+        Text txtPPS = new Text();
+        txtPPS.setText("By PPS:");
+        grid.add(txtPPS, 0, 2);
+        TextField ppsTextField = new TextField();
+        grid.add(ppsTextField, 1, 2);
+        grid.add(btnConfirmPPS, 2, 2);
+        bp.setCenter(bpCENTER);
+        bp.setTop(bpTOP);
+        btnConfirmPPS.setOnAction(e -> {
+            if (ppsTextField.getText().equals("")) {
+                return;
+            }
+            scnPropPayment = makeViewPropPaymentTableByPPSNScene(primaryStage, ppsTextField.getText());
+            primaryStage.setScene(scnPropPayment);
+        });
+        btnConfirmEircode.setOnAction(e -> {
+            if (eircodeTextField.getText().equals("")) {
+                return;
+            }
+            scnPropPayment = makeViewPropPaymentTableByEircodeScene(primaryStage, eircodeTextField.getText());
+            primaryStage.setScene(scnPropPayment);
+        });
+        return new Scene(bp);
+    }
+
+    public Scene makeViewPropScene(Stage primaryStage, String year) {
+        Button btnBack = new Button("Back");
+        String titleText = "My Properties as of " + year;
+        BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Eircode", "Address", "Owners", "Value",
+                "Tax Due", "Tax Overdue", "Total Owed");
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
+        return new Scene(bp);
+    }
+
+    public Scene makeYearlyBalancingStatementScene(Stage primaryStage, String year) {
+        Button btnBack = new Button("Back");
+        String titleText = "Balancing Statement for " + year;
+        BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Date", "Description", "Paid", "Balance");
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
+        return new Scene(bp);
+    }
+
+    public Scene makePropBalancingStatementScene(Stage primaryStage, String eircode) {
+        Button btnBack = new Button("Back");
+        String titleText = "Balancing Statement for " + eircode;
+        BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Date", "Description", "Paid", "Balance");
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
+        return new Scene(bp);
     }
 
     // Methods
@@ -395,7 +736,7 @@ public class App extends Application {
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.setPlaceholder(new Label("No rows to display"));
         for (String s : tableColumnTitles) {
-            TableColumn col = new TableColumn(s);
+            TableColumn<String, String> col = new TableColumn<>(s);
             col.setMinWidth(100);
             tableView.getColumns().add(col);
         }
