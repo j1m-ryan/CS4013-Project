@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -30,6 +32,8 @@ public class App extends Application {
     Scene scnWelcome, scnAbout, scnLogin, scnSignUp, scnDepLogin, scnDash, scnDepDash, scnRegProp, scnPayTax,
             scnViewChoice, scnViewProp, scnPrevPayments, scnOverdueProp, scnPropTaxStat, scnPayData, scnYearBalance,
             scnPropBalance, scnOverduePropTable, scnPropPayment;
+    SystemManager sm;
+    Owner currentOwner;
 
     public static void main(String args[]) {
         launch(args);
@@ -37,6 +41,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        sm = new SystemManager();
         primaryStage.setTitle("Property Management System");
         primaryStage.getIcons().add(new Image("file:house.png"));
         scnWelcome = makeWelcomeScene(primaryStage);
@@ -109,10 +114,23 @@ public class App extends Application {
             primaryStage.setScene(scnWelcome);
         });
         btnLogin.setOnAction(e -> {
+            if (!sm.ownerExists(userTextField.getText())) {
+                Alert a = makeAlert("PPS Number does not exist!", "PPS Number Error", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (!sm.loginVerification(userTextField.getText(), pwBox.getText())) {
+                Alert a = makeAlert("Login failed!", "Login Error", AlertType.ERROR);
+                a.show();
+                return;
+            }
+            currentOwner = sm.getOwner(userTextField.getText());
+
             scnDash = makeDashScene(primaryStage);
             primaryStage.setScene(scnDash);
         });
-        btnSignUp.setOnAction(e -> {
+        btnSignUp.setOnAction(e ->
+
+        {
             scnSignUp = makeSignUpScene(primaryStage);
             primaryStage.setScene(scnSignUp);
         });
@@ -143,7 +161,21 @@ public class App extends Application {
         bp.setCenter(grid);
 
         btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
-        // btnSignUp.setOnAction(e -> primaryStage.setScene(scnSignUp));;
+        btnSignUp.setOnAction(e -> {
+            if (sm.ownerExists(userTextField.getText())) {
+                Alert a = makeAlert("User already exists, please log in!", "User already exists!", AlertType.ERROR);
+                a.show();
+                return;
+            } else {
+                sm.registerOwner(userTextField.getText(), userTextField2.getText(), pwBox.getText());
+                Alert a = makeAlert("User Registered!", "User Registered!", AlertType.INFORMATION);
+                a.show();
+                currentOwner = sm.getOwner(userTextField.getText());
+                scnDash = makeDashScene(primaryStage);
+                primaryStage.setScene(scnDash);
+            }
+
+        });
 
         return new Scene(bp);
     }
@@ -176,8 +208,8 @@ public class App extends Application {
         Button btnBack = new Button("Logout");
         BorderPane bp = makeNewBorderPaneWithBtnBar("Owner Dashboard", btnBack);
         GridPane grid = makeNewGridPane();
-        Label lblPPSN = new Label("PPSN:");
-        Label lblName = new Label("Name:");
+        Label lblPPSN = new Label("PPSN:" + currentOwner.getPps());
+        Label lblName = new Label("Name:" + currentOwner.getName());
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
         BorderPane bpTOP = new BorderPane();
@@ -742,6 +774,14 @@ public class App extends Application {
         }
 
         return tableView;
+    }
+
+    public Alert makeAlert(String alert, String alertTitle, AlertType atype) {
+        Alert a = new Alert(AlertType.NONE);
+        a.setHeaderText(alert);
+        a.setTitle(alertTitle);
+        a.setAlertType(atype);
+        return a;
     }
 
 }
