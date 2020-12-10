@@ -10,11 +10,12 @@ public class SystemManager  {
     
     HashMap<String, String> eircodeToLocation = new HashMap<>();
     HashMap<String, String> locationToEircode = new HashMap<>();
-    // Thinak again HashMap<Integer, ArrayList<Record>> taxdueRecords = new HashMap<Integer, ArrayList<Record>>();
     
     private int uniquePropertyId = 0;
     private LocalDate currentDate;
     private int minYear = 1900;
+
+    
 
     public SystemManager(){
         // do nothing for now but later will do something like run() method
@@ -279,13 +280,36 @@ public class SystemManager  {
             return new ArrayList<Record>();
         } // will remove the else code and add code later to throw an exception if eircode not found in eircodeToLocation
     }
+
+    // method to check if owner with matching pps number exists in database
+    public boolean ownerExists(int ppsNum) {
+        if (owners.containsKey(ppsNum)){return true;}
+        return false;
+    }
+
+    // method to check if login details match the one's on database
+    public boolean loginVerification(int ppsNum, String pass) {
+        if(ownerExists(ppsNum)){
+            String accCorrectPass = owners.get(ppsNum).getPassword();
+            if(accCorrectPass.equalsIgnoreCase(pass)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // returns owner object if an owner with matching ppnNum is found
+    public Owner getOwner(int ppsNum) {
+        return owners.get(ppsNum);
+        // will be throwing error if not found for later
+    }
+
+
     /**
 
     private void updatePropertyData(Property property){}
 
     private void updateOwners(){}
-    
-    public boolean ownerExists(int pps_num){}
 
     public boolean transferOwnership(int propertyId, int oldOwnerPps, int newOwnerPps){}
     */
