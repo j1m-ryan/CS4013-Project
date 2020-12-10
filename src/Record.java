@@ -1,5 +1,6 @@
 public class Record {
-    private int propertyId = 0;
+    private String eircode = "";
+    private String eircodeFirstThreeChars = "";
     private double taxAmount = 0;
     private String status = "";
     private int year = 0;
@@ -8,15 +9,16 @@ public class Record {
         // do nothing
     }
 
-    public Record(int propertyId, double taxAmount, String status, int year){
-        this.propertyId = propertyId;
+    public Record(String eircode, double taxAmount, String status, int year){
+        this.eircode = eircode;
+        this.eircodeFirstThreeChars = eircode.substring(0, 3);  
         this.taxAmount = taxAmount;
         this.status = status;
         this.year = year;
     }
 
-    public int getPropId(){
-        return this.propertyId;
+    public String getEircode(){
+        return this.eircode;
     }
 
     public double getTaxAmount(){
@@ -29,6 +31,10 @@ public class Record {
 
     public int getYear(){
         return this.year;
+    }
+
+    public String getEricodeFirstThreeChars(){
+        return this.eircodeFirstThreeChars;
     }
 
     public void setPaymentStatus(String newStatus){

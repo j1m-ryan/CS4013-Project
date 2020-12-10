@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
 import java.io.IOException;
 public class LoadAndShowData {
     public static void main(String args[]) throws IOException
@@ -27,9 +25,9 @@ public class LoadAndShowData {
         ArrayList<Record> tempRecords;
         tempRecords = system.getOverDuePropsPerYear(year);
         System.out.println("Properties with tax over due for " + year);
-        System.out.println("Property Id      Tax due        PaymentStatus     Year");
+        System.out.println("Eircode      Tax due        PaymentStatus     Year");
         for(Record rec : tempRecords){
-            System.out.println("\n      " + rec.getPropId() + "            " + rec.getTaxAmount() 
+            System.out.println("\n      " + rec.getEircode() + "            " + rec.getTaxAmount() 
                         + "            " + rec.getPaymentStatus() + "          " + rec.getYear()) ;    
         }
 
@@ -39,11 +37,10 @@ public class LoadAndShowData {
         System.out.println("Owner      PropertyIDs");
         for(Owner owner: owners){
             System.out.println("\n\nList of " + owner.getName() + " properties are :" );
-            ArrayList<Integer> tempPropsIds = system.getOwnerPropertiesIds(owner.getPpsNum());
-            System.out.println(tempPropsIds.size());
-            for(int id : tempPropsIds){
+            ArrayList<String> tempEircodes = system.getOwnerPropertiesEircodes(owner.getPpsNum());
+            for(String id : tempEircodes){
                 Property prop = system.getPropertyData(id);
-                System.out.println("Property ID : " + id
+                System.out.println("\nEircodes : " + id
                                 + "\nAddress : " + prop.getAddress()
                                 + "\nEircode : " + prop.getEircode()
                                 + "\nEst. Market Value : " + prop.getEstimatedMarketValue());   
@@ -56,18 +53,18 @@ public class LoadAndShowData {
         System.out.println("\nOwner PropertyIDs and their tax due, payment status");
         for(Owner owner: owners){
             System.out.println("\n\nList of " + owner.getName() + " properties and their taxes are :" );
-            ArrayList<Integer> tempPropsIds = system.getOwnerPropertiesIds(owner.getPpsNum());
-            for(int id : tempPropsIds){
+            ArrayList<String> tempEircodes = system.getOwnerPropertiesEircodes(owner.getPpsNum());
+            for(String id : tempEircodes){
                 Property prop = system.getPropertyData(id);
-                System.out.println("Property ID : " + id
+                System.out.println("Eircode : " + id
                                 + "\nAddress : " + prop.getAddress()
                                 + "\nEircode : " + prop.getEircode()
                                 + "\nEst. Market Value : " + prop.getEstimatedMarketValue()); 
                 
                 paymentData = system.getPaymentRecords(id);
-                System.out.println("Property Id      Tax due        PaymentStatus     Year");
+                System.out.println("Eircodes      Tax due        PaymentStatus     Year");
                 for(Record rec : paymentData){
-                    System.out.println("\n      " + rec.getPropId() + "            " + rec.getTaxAmount() 
+                    System.out.println("\n      " + rec.getEircode() + "            " + rec.getTaxAmount() 
                         + "            " + rec.getPaymentStatus() + "          " + rec.getYear()) ;
                 }
             }
@@ -75,14 +72,14 @@ public class LoadAndShowData {
 
         System.out.println("\n\n************************************\n\n");
 
-        System.out.println("\nGarry makes a payment for his property id 1");
-        system.makePayment(2018, 1, 100.0);                
+        System.out.println("\nGarry makes a payment for his property eircode V14A221");
+        system.makePayment(2018, "V14A221", 100.0);                
 
-        System.out.println("\nget payment data of Property id 1");
-        paymentData = system.getPaymentRecords(1);
-        System.out.println("Property Id      Tax due        PaymentStatus     Year");
+        System.out.println("\nget payment data of Property eircode V14A221");
+        paymentData = system.getPaymentRecords("V14A221");
+        System.out.println("Eircode      Tax due        PaymentStatus     Year");
         for(Record rec : paymentData){
-            System.out.println("\n      " + rec.getPropId() + "            " + rec.getTaxAmount() 
+            System.out.println("\n      " + rec.getEircode() + "            " + rec.getTaxAmount() 
                         + "            " + rec.getPaymentStatus() + "          " + rec.getYear()) ;
         }
 
@@ -101,11 +98,11 @@ public class LoadAndShowData {
         System.out.println("\nDisplaying all Over Due Props for year " + year +  " and " + testEricode + " Ericode area");
         ArrayList<Record> props = system.getAllOverDueProps(year, testEricode);
         for(Record r : props){
-            paymentData = system.getPaymentRecords(r.getPropId());
-            System.out.println("Property Id      Tax due        PaymentStatus     Year    Property eircode");
+            paymentData = system.getPaymentRecords(r.getEircode());
+            System.out.println("Eircode      Tax due        PaymentStatus     Year    Property eircode");
             for(Record rec : paymentData){
-                Property temp = system.getPropertyData(rec.getPropId());
-                System.out.println("\n      " + rec.getPropId() + "            " + rec.getTaxAmount() 
+                Property temp = system.getPropertyData(rec.getEircode());
+                System.out.println("\n      " + rec.getEircode() + "            " + rec.getTaxAmount() 
                             + "            " + rec.getPaymentStatus() + "          " + rec.getYear()
                             + "    " + temp.getEircode()) ;
             }

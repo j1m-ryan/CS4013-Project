@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.StringTokenizer;
 public class SystemManager  {
     HashMap<String, Owner> owners = new HashMap<String, Owner>();
-    HashMap<Integer, Property> registeredProperties = new HashMap<Integer, Property>();
+    HashMap<String, Property> registeredProperties = new HashMap<String, Property>();
     HashMap<Integer, ArrayList<Record>> paymentRecords = new HashMap<Integer, ArrayList<Record>>();
     
     HashMap<String, String> eircodeToLocation = new HashMap<>();
@@ -84,16 +84,16 @@ public class SystemManager  {
 
     // helper method to load payments records to systam at start up
     private void loadPaymentRecords(ArrayList<String> recordData){
-        int propertyID = Integer.parseInt(recordData.get(0));
+        String eircode = recordData.get(0);
         double taxDue = Double.parseDouble(recordData.get(1));
         String paymentStatus = recordData.get(2);
         int year = Integer.parseInt(recordData.get(3));
-        registerPaymentsRecord(propertyID, taxDue, paymentStatus, year);
+        registerPaymentsRecord(eircode, taxDue, paymentStatus, year);
     }
 
     // helper method to link loaded properties to owerns at start up
     private void linkPropertiesToOwners(ArrayList<String> relationData){
-        int propertyId = Integer.parseInt(relationData.get(0));
+        String eircode = relationData.get(0);
         relationData.remove(0);
         ArrayList<String> tempOwners = new ArrayList<String>();
         for(String id : relationData){
@@ -102,19 +102,18 @@ public class SystemManager  {
                 tempOwners.add(owner.getPpsNum());
             }
         }
-        linkPropertyToOwners(tempOwners, propertyId);
+        linkPropertyToOwners(tempOwners, eircode);
     }
 
     // helper method to load registered properties at start up
     private void loadRegisteredProps(ArrayList<String> propDetails){
-        uniquePropertyId++;
         boolean isPrincipalPrivateResidence = false;
         if(propDetails.get(4).equalsIgnoreCase("true")){
             isPrincipalPrivateResidence = true;
         }else{
             isPrincipalPrivateResidence = false;
         }
-        registeredProperties.put(uniquePropertyId, new Property(propDetails.get(0),propDetails.get(1),
+        registeredProperties.put(propDetails.get(1), new Property(propDetails.get(0),propDetails.get(1),
         propDetails.get(2),propDetails.get(3), isPrincipalPrivateResidence));
     }
 
@@ -124,14 +123,14 @@ public class SystemManager  {
     }
 
     // method to get properties ids linked to owner
-    public ArrayList<Integer> getOwnerPropertiesIds(String owner_ppsNum){
-        return owners.get(owner_ppsNum).getPropertiesId();
+    public ArrayList<String> getOwnerPropertiesEircodes(String owner_ppsNum){
+        return owners.get(owner_ppsNum).getPropertiesEircodes();
     }
 
     // method to link property to owners
-    private void linkPropertyToOwners(ArrayList<String> owners_ppsNums, int propertyId){
+    private void linkPropertyToOwners(ArrayList<String> owners_ppsNums, String eircode){
         for(String ppsNum : owners_ppsNums){
-            owners.get(ppsNum).addProperty(propertyId);
+            owners.get(ppsNum).addProperty(eircode);
         }
     }
 
@@ -139,13 +138,12 @@ public class SystemManager  {
     public void registerProperty(int year, String owners_ppsNums, String address, String eircode, 
                                 String estimatedMarketValue, String locationCategory,boolean isPrincipalPrivateResidence)
     {
-        uniquePropertyId++;  
-        registeredProperties.put(uniquePropertyId, new Property(address, eircode, 
+        registeredProperties.put(eircode, new Property(address, eircode, 
                                  estimatedMarketValue,  locationCategory, isPrincipalPrivateResidence));
-        linkPropertyToOwners(getOwnersAsArrayList(owners_ppsNums), uniquePropertyId);
-        double taxDue = calculateTax(uniquePropertyId);
+        linkPropertyToOwners(getOwnersAsArrayList(owners_ppsNums), eircode);
+        double taxDue = calculateTax(eircode);
         
-        registerPaymentsRecord(uniquePropertyId, taxDue, "unpaid", year);
+        registerPaymentsRecord(eircode, taxDue, "unpaid", year);
     }
 
     // method to return owners pps in array 
@@ -159,20 +157,20 @@ public class SystemManager  {
     }
 
     // method to register payment records
-    public void registerPaymentsRecord(int propertyID, double taxDue, String paymentStatus, int year){
+    public void registerPaymentsRecord(String eircode, double taxDue, String paymentStatus, int year){
         ArrayList<Record> temp = new ArrayList<Record>();
         if (paymentRecords.get(year) == null){
-            temp.add(new Record(propertyID, taxDue, paymentStatus, year));
+            temp.add(new Record(eircode, taxDue, paymentStatus, year));
             paymentRecords.put(year, temp);    
         } else {
             temp = paymentRecords.get(year);
-            temp.add(new Record(propertyID, taxDue, paymentStatus, year));
+            temp.add(new Record(eircode, taxDue, paymentStatus, year));
             paymentRecords.put(year, temp);
         }
     }
 
     // method to calcuclate property tax
-    private double calculateTax(int propertyId){
+    private double calculateTax(String eircode){
         return 100;
     }
 
@@ -189,7 +187,7 @@ public class SystemManager  {
             ArrayList<Record> allDueProps = getDataFromPaymentRecords(year, "unpaid");
             ArrayList<Record> ericodeMatchedProps = new ArrayList<Record>();
             for(Record rec : allDueProps){
-                if(registeredProperties.get(rec.getPropId()).getEircode().equalsIgnoreCase(eircode)){
+                if(rec.getEricodeFirstThreeChars().equalsIgnoreCase(eircode)){
                     ericodeMatchedProps.add(rec);
                 }
             }
@@ -217,26 +215,26 @@ public class SystemManager  {
     }
 
     // method to get property data ie. address, eircode, location etc.
-    public Property getPropertyData(int propertyId){
-        return registeredProperties.get(propertyId);
+    public Property getPropertyData(String eircode){
+        return registeredProperties.get(eircode);
     }
         
     // method to get property payments records for all registered years
-    public ArrayList<Record> getPaymentRecords(int propertyId){
+    public ArrayList<Record> getPaymentRecords(String eircode){
         currentDate = LocalDate.now();
         ArrayList<Record> combinedRecs = new ArrayList<Record>();
         for(int year = minYear;year <= currentDate.getYear(); year++){
-            combinedRecs.addAll(getPaymentRecords(year, propertyId));
+            combinedRecs.addAll(getPaymentRecords(year, eircode));
         }
         return combinedRecs;
     }
 
     // method returns all payments records of desired property for specified year
-    public ArrayList<Record> getPaymentRecords(int year, int propertyId){
+    public ArrayList<Record> getPaymentRecords(int year, String eircode){
         ArrayList<Record> matchingRecs = new ArrayList<Record>();
         if(paymentRecords.get(year) != null){
             for(Record rec : paymentRecords.get(year)){
-                if(rec.getPropId() == propertyId){
+                if(rec.getEircode().equalsIgnoreCase(eircode)){
                     matchingRecs.add(rec);
                 }
             }
@@ -245,9 +243,9 @@ public class SystemManager  {
     }
 
     // method to pay the tax for specified year of a property
-    public Boolean makePayment(int year, int propertyId, double paid){
+    public Boolean makePayment(int year, String eircode, double paid){
         ArrayList<Record> temp = new ArrayList<Record>();
-        temp = getPaymentRecords(year, propertyId);
+        temp = getPaymentRecords(year, eircode);
         for(Record rec : temp){
             if(rec.getTaxAmount() == paid){
                 rec.setPaymentStatus("paid");
@@ -273,8 +271,8 @@ public class SystemManager  {
     // method for counting number of registered properties for a specified Eircode
     private int totalNumOfProperties(String eircode){
         int count = 0;
-        for(int k : registeredProperties.keySet()){
-            if(registeredProperties.get(k).getEircode().equalsIgnoreCase(eircode)){
+        for(String k : registeredProperties.keySet()){
+            if(registeredProperties.get(k).getEircodeFirstThreeChars().equalsIgnoreCase(eircode)){
                 count++;
             }
         }
@@ -297,7 +295,7 @@ public class SystemManager  {
         if(eircodeToLocation.containsKey(eircode)){
             ArrayList<Record> matchingRecords = new ArrayList<Record>();
             for(Record rec : allRecords){
-                if(registeredProperties.get(rec.getPropId()).getEircode().equalsIgnoreCase(eircode)){
+                if(rec.getEricodeFirstThreeChars().equalsIgnoreCase(eircode)){
                     matchingRecords.add(rec);
                 }
             }
@@ -348,7 +346,6 @@ public class SystemManager  {
     public boolean isValidPassword(String password) {
         return password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$");
     }
-
     
 
     /**

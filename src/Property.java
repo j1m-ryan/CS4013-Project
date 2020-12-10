@@ -4,6 +4,7 @@ public class Property {
     private ArrayList<String> ownersPPS = new ArrayList<String>();
     private String address = "";
     private String eircode = "";
+    private String eircodeFirstThreeChars = "";
     private String estimatedMarketValue = "";
     private String locationCatgeory = "";
     private boolean isPrincipalPrivateResidence = false;
@@ -12,6 +13,7 @@ public class Property {
     boolean isPrincipalPrivateResidence) {
         this.setAddress(address);
         this.setEircode(eircode);
+        this.eircodeFirstThreeChars = eircode.substring(0, 3); 
         this.setEstimatedMarketValue(estimatedMarketValue);
         this.setLocationCatgeory(locationCategory);
         this.setPrincipalPrivateResidence(isPrincipalPrivateResidence);
@@ -53,7 +55,12 @@ public class Property {
     public void setEircode(String eircode) {
         this.eircode = eircode;
     }
-	
+    
+    //Getter for Eircode first three characters
+    public String getEircodeFirstThreeChars() {
+        return eircodeFirstThreeChars;
+    }
+
     //Getter for Adress
     public String getAddress() {
         return address;

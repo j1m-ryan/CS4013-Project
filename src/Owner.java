@@ -4,7 +4,7 @@ public class Owner {
     private String name = "";
     private String ppsNum = "";
     private String password = "";
-    private ArrayList<Integer> propertiesOwned = new ArrayList<Integer>();
+    private ArrayList<String> propertiesOwned = new ArrayList<String>();
 
     public Owner(String name, String ppsNum, String password) {
     
@@ -43,8 +43,8 @@ public class Owner {
     }
 
     //Add Property
-    public void addProperty(int propertyId){
-        propertiesOwned.add(propertyId);
+    public void addProperty(String eircode){
+        propertiesOwned.add(eircode);
     }
 
     //method to Remove Property from the list 
@@ -53,7 +53,7 @@ public class Owner {
     }
 
     //Get properties ID
-    public ArrayList<Integer> getPropertiesId(){
+    public ArrayList<String> getPropertiesEircodes(){
         return propertiesOwned;
     }
 }
