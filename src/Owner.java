@@ -2,14 +2,14 @@ import java.util.ArrayList;
 public class Owner {
 
     private String name = "";
-    private int pps = 0;
+    private String ppsNum = "";
     private String password = "";
     private ArrayList<Integer> propertiesOwned = new ArrayList<Integer>();
 
-    public Owner(String name, int pps, String password) {
+    public Owner(String name, String ppsNum, String password) {
     
         setName(name);
-        setPps(pps);
+        setPpsNum(ppsNum);
         setPassword(password);
     }
 	//method to set name 
@@ -18,8 +18,8 @@ public class Owner {
     }
 
 	//method to set pps number
-    public void setPps(int pps_num) {
-        pps = pps_num;
+    public void setPpsNum(String ppsNum) {
+        this.ppsNum = ppsNum;
     }
 
 	//method to set password (no return type)
@@ -32,9 +32,9 @@ public class Owner {
         return name;
     }
     
-    //method to show PPS number
-    public int getPps() {
-        return pps;
+    //method to show ppsNum number
+    public String getPpsNum() {
+        return ppsNum;
     }
     
     //Show password

@@ -6,9 +6,9 @@ public class LoadAndShowData {
     public static void main(String args[]) throws IOException
     {
         ArrayList<Owner> owners = new ArrayList<Owner>();
-        owners.add(new Owner("Garry",10022,"p1"));
-        owners.add(new Owner("Larry",20044,"p2"));
-        owners.add(new Owner("Terry",30011,"p3"));
+        owners.add(new Owner("Garry","10022","p1"));
+        owners.add(new Owner("Larry","20044","p2"));
+        owners.add(new Owner("Terry","30011","p3"));
         SystemManager system = new SystemManager();
         
         CSVReader reader = new CSVReader();
@@ -39,7 +39,7 @@ public class LoadAndShowData {
         System.out.println("Owner      PropertyIDs");
         for(Owner owner: owners){
             System.out.println("\n\nList of " + owner.getName() + " properties are :" );
-            ArrayList<Integer> tempPropsIds = system.getOwnerPropertiesIds(owner.getPps());
+            ArrayList<Integer> tempPropsIds = system.getOwnerPropertiesIds(owner.getPpsNum());
             System.out.println(tempPropsIds.size());
             for(int id : tempPropsIds){
                 Property prop = system.getPropertyData(id);
@@ -56,7 +56,7 @@ public class LoadAndShowData {
         System.out.println("\nOwner PropertyIDs and their tax due, payment status");
         for(Owner owner: owners){
             System.out.println("\n\nList of " + owner.getName() + " properties and their taxes are :" );
-            ArrayList<Integer> tempPropsIds = system.getOwnerPropertiesIds(owner.getPps());
+            ArrayList<Integer> tempPropsIds = system.getOwnerPropertiesIds(owner.getPpsNum());
             for(int id : tempPropsIds){
                 Property prop = system.getPropertyData(id);
                 System.out.println("Property ID : " + id

@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.StringTokenizer;
 public class SystemManager  {
-    HashMap<Integer, Owner> owners = new HashMap<Integer, Owner>();
+    HashMap<String, Owner> owners = new HashMap<String, Owner>();
     HashMap<Integer, Property> registeredProperties = new HashMap<Integer, Property>();
     HashMap<Integer, ArrayList<Record>> paymentRecords = new HashMap<Integer, ArrayList<Record>>();
     
@@ -42,7 +42,7 @@ public class SystemManager  {
         // loading registeredOwners data
         for(String ownerData : ownersData){
             ArrayList<String> separatedData = separateWordsInLine(ownerData);
-            registerOwner(separatedData.get(0), Integer.parseInt(separatedData.get(1)), separatedData.get(2));
+            registerOwner(separatedData.get(0), separatedData.get(1), separatedData.get(2));
         }
         // loading registeredProperties data
         for(String propertyData : propertiesData){
@@ -89,11 +89,11 @@ public class SystemManager  {
     private void linkPropertiesToOwners(ArrayList<String> relationData){
         int propertyId = Integer.parseInt(relationData.get(0));
         relationData.remove(0);
-        ArrayList<Integer> tempOwners = new ArrayList<Integer>();
+        ArrayList<String> tempOwners = new ArrayList<String>();
         for(String id : relationData){
-            Owner owner = owners.get(Integer.parseInt(id));
-            if(owner.getPps() == Integer.parseInt(id)){
-                tempOwners.add(owner.getPps());
+            Owner owner = owners.get(id);
+            if(owner.getPpsNum().equalsIgnoreCase(id)){
+                tempOwners.add(owner.getPpsNum());
             }
         }
         linkPropertyToOwners(tempOwners, propertyId);
@@ -106,27 +106,27 @@ public class SystemManager  {
     }
 
     // method to register owner
-    public void registerOwner(String name, int pps, String password){
-        owners.put(pps, (new Owner(name, pps, password)));
+    public void registerOwner(String name, String ppsNum, String password){
+        owners.put(ppsNum, (new Owner(name, ppsNum, password)));
     }
 
     // method to get properties ids linked to owner
-    public ArrayList<Integer> getOwnerPropertiesIds(int owner_pps){
-        return owners.get(owner_pps).getPropertiesId();
+    public ArrayList<Integer> getOwnerPropertiesIds(String owner_ppsNum){
+        return owners.get(owner_ppsNum).getPropertiesId();
     }
 
     // method to link property to owners
-    private void linkPropertyToOwners(ArrayList<Integer> owners_pps, int propertyId){
-        for(int pps : owners_pps){
-            owners.get(pps).addProperty(propertyId);
+    private void linkPropertyToOwners(ArrayList<String> owners_ppsNums, int propertyId){
+        for(String ppsNum : owners_ppsNums){
+            owners.get(ppsNum).addProperty(propertyId);
         }
     }
 
     // method to register new property
-    public void registerProperty(int year, ArrayList<Integer> owners_pps, ArrayList<String> propDetails){
+    public void registerProperty(int year, ArrayList<String> owners_ppsNums, ArrayList<String> propDetails){
         uniquePropertyId++;  
-        registeredProperties.put(uniquePropertyId, new Property(owners_pps, propDetails));
-        linkPropertyToOwners(owners_pps, uniquePropertyId);
+        registeredProperties.put(uniquePropertyId, new Property(owners_ppsNums, propDetails));
+        linkPropertyToOwners(owners_ppsNums, uniquePropertyId);
         double taxDue = calculateTax(uniquePropertyId);
         
         registerPaymentsRecord(uniquePropertyId, taxDue, "unpaid", year);
@@ -282,13 +282,13 @@ public class SystemManager  {
     }
 
     // method to check if owner with matching pps number exists in database
-    public boolean ownerExists(int ppsNum) {
+    public boolean ownerExists(String ppsNum) {
         if (owners.containsKey(ppsNum)){return true;}
         return false;
     }
 
     // method to check if login details match the one's on database
-    public boolean loginVerification(int ppsNum, String pass) {
+    public boolean loginVerification(String ppsNum, String pass) {
         if(ownerExists(ppsNum)){
             String accCorrectPass = owners.get(ppsNum).getPassword();
             if(accCorrectPass.equalsIgnoreCase(pass)){
@@ -298,12 +298,22 @@ public class SystemManager  {
         return false;
     }
 
-    // returns owner object if an owner with matching ppnNum is found
-    public Owner getOwner(int ppsNum) {
+    // returns owner object if an owner with matching ppsNum is found
+    public Owner getOwner(String ppsNum) {
         return owners.get(ppsNum);
         // will be throwing error if not found for later
     }
 
+    // 7 digits and 1 or 2 letters
+    public boolean isValidppsNum(String ppsNum) {
+        return ppsNum.matches("[\\d]{7}[ A-Za-z]{1,2}");
+    }
+
+    // 8 characters with at least 1 letter and 1 number
+    public boolean isValidPassword(String password) {
+        return password.matches("^(?=.[A-Za-z])(?=.\\d)[A-Za-z\\d]{8,}$");
+    }
+    
 
     /**
 
@@ -311,7 +321,7 @@ public class SystemManager  {
 
     private void updateOwners(){}
 
-    public boolean transferOwnership(int propertyId, int oldOwnerPps, int newOwnerPps){}
+    public boolean transferOwnership(int propertyId, int oldOwnerppsNum, int newOwnerppsNum){}
     */
 
 }

@@ -1,26 +1,26 @@
 import java.util.ArrayList;
 
 public class Property {
-    private ArrayList<Integer> ownersPPS = new ArrayList<Integer>();
+    private ArrayList<String> ownersPPS = new ArrayList<String>();
     private String address = "";
     private String eircode = "";
-    private double estimatedMarketValue = 0;
+    private String estimatedMarketValue = "";
     private String locationCatgeory = "";
     private boolean isPrincipalPrivateResidence = false;
     
     public Property(ArrayList<String> propDetails) {
         this.setAddress(propDetails.get(0));
         this.setEircode(propDetails.get(1));
-        this.setEstimatedMarketValue(Double.parseDouble(propDetails.get(2)));
+        this.setEstimatedMarketValue(propDetails.get(2));
         this.setLocationCatgeory(propDetails.get(3));
         this.setPrincipalPrivateResidence(propDetails.get(4));
     }
     
-    public Property(ArrayList<Integer> newOwners, ArrayList<String> propDetails) {
+    public Property(ArrayList<String> newOwners, ArrayList<String> propDetails) {
         this.setOwnersPps(newOwners);
         this.setAddress(propDetails.get(0));
         this.setEircode(propDetails.get(1));
-        this.setEstimatedMarketValue(Double.parseDouble(propDetails.get(2)));
+        this.setEstimatedMarketValue(propDetails.get(2));
         this.setLocationCatgeory(propDetails.get(3));
         this.setPrincipalPrivateResidence(propDetails.get(4));
     }
@@ -47,12 +47,12 @@ public class Property {
     }
 	
     //Getter method for Estimate market value
-    public double getEstimatedMarketValue() {
+    public String getEstimatedMarketValue() {
         return estimatedMarketValue;
     }
 	
     //Setter for Estimate Market Value
-    public void setEstimatedMarketValue(double estimatedMarketValue) {
+    public void setEstimatedMarketValue(String estimatedMarketValue) {
         this.estimatedMarketValue = estimatedMarketValue;
     }
 	
@@ -77,11 +77,11 @@ public class Property {
     }
 	
     //Array list that will save Owner PPS
-    public ArrayList<Integer> getOwnersPps() {
+    public ArrayList<String> getOwnersPps() {
         return ownersPPS;
     }
 	//Setter for Owner PPS from the Arraylist
-    public void setOwnersPps(ArrayList<Integer> ids) {
+    public void setOwnersPps(ArrayList<String> ids) {
         ownersPPS = ids;
     }
 
