@@ -346,8 +346,9 @@ public class SystemManager  {
     }
 
     public boolean isValidPassword(String password) {
-        return password.matches("^(?=.?[A-Z])(?=.?[a-z])(?=.?[0-9])(?=.?[#?!@$%^&*-]).{8,}$");
+        return password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$");
     }
+
     
 
     /**
