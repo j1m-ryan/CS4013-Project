@@ -8,33 +8,21 @@ public class Property {
     private String locationCatgeory = "";
     private boolean isPrincipalPrivateResidence = false;
     
-    public Property(ArrayList<String> propDetails) {
-        this.setAddress(propDetails.get(0));
-        this.setEircode(propDetails.get(1));
-        this.setEstimatedMarketValue(propDetails.get(2));
-        this.setLocationCatgeory(propDetails.get(3));
-        this.setPrincipalPrivateResidence(propDetails.get(4));
-    }
-    
-    public Property(ArrayList<String> newOwners, ArrayList<String> propDetails) {
-        this.setOwnersPps(newOwners);
-        this.setAddress(propDetails.get(0));
-        this.setEircode(propDetails.get(1));
-        this.setEstimatedMarketValue(propDetails.get(2));
-        this.setLocationCatgeory(propDetails.get(3));
-        this.setPrincipalPrivateResidence(propDetails.get(4));
+    public Property(String address, String eircode, String estimatedMarketValue, String locationCategory,
+    boolean isPrincipalPrivateResidence) {
+        this.setAddress(address);
+        this.setEircode(eircode);
+        this.setEstimatedMarketValue(estimatedMarketValue);
+        this.setLocationCatgeory(locationCategory);
+        this.setPrincipalPrivateResidence(isPrincipalPrivateResidence);
     }
     
     public boolean isPrincipalPrivateResidence() {
         return isPrincipalPrivateResidence;
     }
 
-    public void setPrincipalPrivateResidence(String isPrincipalPrivateResidence) {
-        if (isPrincipalPrivateResidence == "yes"){
-            this.isPrincipalPrivateResidence = true;
-        }else{
-            this.isPrincipalPrivateResidence = false;
-        }
+    public void setPrincipalPrivateResidence(Boolean isPrincipalPrivateResidence) {
+        this.isPrincipalPrivateResidence = isPrincipalPrivateResidence;
     }
 	
     //Getter for Location Category

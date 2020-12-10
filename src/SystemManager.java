@@ -66,6 +66,12 @@ public class SystemManager  {
             }
     }
 
+    // methods to update all database of registered owerns, properties and records
+   
+
+
+
+
     // helper method to separate each word in line and send back separated words as arraylist
     private ArrayList<String> separateWordsInLine(String line){
         ArrayList<String> separatedWords = new  ArrayList<String>();
@@ -101,8 +107,15 @@ public class SystemManager  {
 
     // helper method to load registered properties at start up
     private void loadRegisteredProps(ArrayList<String> propDetails){
-        uniquePropertyId++;  
-        registeredProperties.put(uniquePropertyId, new Property(propDetails));
+        uniquePropertyId++;
+        boolean isPrincipalPrivateResidence = false;
+        if(propDetails.get(4).equalsIgnoreCase("true")){
+            isPrincipalPrivateResidence = true;
+        }else{
+            isPrincipalPrivateResidence = false;
+        }
+        registeredProperties.put(uniquePropertyId, new Property(propDetails.get(0),propDetails.get(1),
+        propDetails.get(2),propDetails.get(3), isPrincipalPrivateResidence));
     }
 
     // method to register owner
@@ -123,13 +136,26 @@ public class SystemManager  {
     }
 
     // method to register new property
-    public void registerProperty(int year, ArrayList<String> owners_ppsNums, ArrayList<String> propDetails){
+    public void registerProperty(int year, String owners_ppsNums, String address, String eircode, 
+                                String estimatedMarketValue, String locationCategory,boolean isPrincipalPrivateResidence)
+    {
         uniquePropertyId++;  
-        registeredProperties.put(uniquePropertyId, new Property(owners_ppsNums, propDetails));
-        linkPropertyToOwners(owners_ppsNums, uniquePropertyId);
+        registeredProperties.put(uniquePropertyId, new Property(address, eircode, 
+                                 estimatedMarketValue,  locationCategory, isPrincipalPrivateResidence));
+        linkPropertyToOwners(getOwnersAsArrayList(owners_ppsNums), uniquePropertyId);
         double taxDue = calculateTax(uniquePropertyId);
         
         registerPaymentsRecord(uniquePropertyId, taxDue, "unpaid", year);
+    }
+
+    // method to return owners pps in array 
+    private ArrayList<String> getOwnersAsArrayList(String owners_ppsNums){
+        ArrayList<String> ppsNumsArray = new ArrayList<String>();
+        StringTokenizer separatedPpsNums = new StringTokenizer(owners_ppsNums, " ,");
+        while( separatedPpsNums.hasMoreTokens()){
+                ppsNumsArray.add(separatedPpsNums.nextToken());
+        }
+        return ppsNumsArray;
     }
 
     // method to register payment records
@@ -281,6 +307,16 @@ public class SystemManager  {
         } // will remove the else code and add code later to throw an exception if eircode not found in eircodeToLocation
     }
 
+    public boolean areAllAdditionalOwnersRegestered(String ppsNums){
+        StringTokenizer separatedPpsNums = new StringTokenizer(ppsNums, " ,");
+        while( separatedPpsNums.hasMoreTokens()){
+            if(ownerExists(separatedPpsNums.nextToken()) == false){
+                return false;
+            }
+        }
+        return true;
+    }
+
     // method to check if owner with matching pps number exists in database
     public boolean ownerExists(String ppsNum) {
         if (owners.containsKey(ppsNum)){return true;}
@@ -309,9 +345,8 @@ public class SystemManager  {
         return ppsNum.matches("[\\d]{7}[ A-Za-z]{1,2}");
     }
 
-    // 8 characters with at least 1 letter and 1 number
     public boolean isValidPassword(String password) {
-        return password.matches("^(?=.[A-Za-z])(?=.\\d)[A-Za-z\\d]{8,}$");
+        return password.matches("^(?=.?[A-Z])(?=.?[a-z])(?=.?[0-9])(?=.?[#?!@$%^&*-]).{8,}$");
     }
     
 
