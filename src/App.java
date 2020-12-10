@@ -104,21 +104,29 @@ public class App extends Application {
         Label lblPPSN = new Label("PPS Number");
         grid.add(lblPPSN, 0, 1);
         TextField userTextField = new TextField();
+        userTextField.setPromptText("e.g. 1234567AB");
         grid.add(userTextField, 1, 1);
         Label lblPW = new Label("Password");
         grid.add(lblPW, 0, 2);
         PasswordField pwBox = new PasswordField();
+
         grid.add(pwBox, 1, 2);
         bp.setCenter(grid);
         btnBack.setOnAction(e -> {
             primaryStage.setScene(scnWelcome);
         });
         btnLogin.setOnAction(e -> {
-            if (!sm.ownerExists(userTextField.getText())) {
+            String ppsNum = userTextField.getText().trim().toUpperCase();
+            if (!sm.isValidppsNum(ppsNum)) {
+                Alert a = makeAlert("PPS Number must be in the form of 7 digits followed by 1 or 2 letters!",
+                        "PPSN invalid", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (!sm.ownerExists(ppsNum)) {
                 Alert a = makeAlert("PPS Number does not exist!", "PPS Number Error", AlertType.ERROR);
                 a.show();
                 return;
-            } else if (!sm.loginVerification(userTextField.getText(), pwBox.getText())) {
+            } else if (!sm.loginVerification(ppsNum, pwBox.getText())) {
                 Alert a = makeAlert("Login failed!", "Login Error", AlertType.ERROR);
                 a.show();
                 return;
@@ -149,11 +157,13 @@ public class App extends Application {
         Label lblName = new Label("Name");
         grid.add(lblName, 0, 1);
         TextField userTextField = new TextField();
+        userTextField.setPromptText("e.g. John Smith");
         grid.add(userTextField, 1, 1);
         Label lblPPSN = new Label("PPS Number");
         grid.add(lblPPSN, 0, 2);
-        TextField userTextField2 = new TextField();
-        grid.add(userTextField2, 1, 2);
+        TextField ppsBox = new TextField();
+        ppsBox.setPromptText("e.g. 1234567AB");
+        grid.add(ppsBox, 1, 2);
         Label lblPW = new Label("Password");
         grid.add(lblPW, 0, 3);
         PasswordField pwBox = new PasswordField();
@@ -162,17 +172,32 @@ public class App extends Application {
 
         btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
         btnSignUp.setOnAction(e -> {
-            if (sm.ownerExists(userTextField.getText())) {
+            String name = userTextField.getText().trim();
+            String pps = ppsBox.getText().trim().toUpperCase();
+            String password = pwBox.getText().trim();
+            if (!sm.isValidppsNum(pps)) {
+                Alert a = makeAlert("PPS Number must be in the form of 7 digits followed by 1 or 2 letters!",
+                        "PPSN invalid", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (!sm.isValidPassword(password)) {
+                Alert a = makeAlert(
+                        "Password Requirements. \nAt least one upper case English letter,\nAt least one lower case English letter, \nAt least one digit, \nAt least one special character, \nMinimum eight in length.",
+                        "Password invalid!", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (sm.ownerExists(pps)) {
                 Alert a = makeAlert("User already exists, please log in!", "User already exists!", AlertType.ERROR);
                 a.show();
                 return;
             } else {
-                sm.registerOwner(userTextField.getText(), userTextField2.getText(), pwBox.getText());
+                sm.registerOwner(name, pps, password);
                 Alert a = makeAlert("User Registered!", "User Registered!", AlertType.INFORMATION);
                 a.show();
-                currentOwner = sm.getOwner(userTextField.getText());
+                currentOwner = sm.getOwner(pps);
                 scnDash = makeDashScene(primaryStage);
                 primaryStage.setScene(scnDash);
+
             }
 
         });
@@ -188,6 +213,7 @@ public class App extends Application {
         Label lblWorkID = new Label("Work ID");
         grid.add(lblWorkID, 0, 1);
         TextField userTextField = new TextField();
+        userTextField.setPromptText("e.g. 2134324");
         grid.add(userTextField, 1, 1);
         Label lblPW = new Label("Password");
         grid.add(lblPW, 0, 2);
@@ -208,7 +234,7 @@ public class App extends Application {
         Button btnBack = new Button("Logout");
         BorderPane bp = makeNewBorderPaneWithBtnBar("Owner Dashboard", btnBack);
         GridPane grid = makeNewGridPane();
-        Label lblPPSN = new Label("PPSN:" + currentOwner.getPps());
+        Label lblPPSN = new Label("PPSN:" + currentOwner.getPpsNum());
         Label lblName = new Label("Name:" + currentOwner.getName());
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
@@ -357,21 +383,25 @@ public class App extends Application {
         Label lblOwners = new Label("Additonal Owners:");
         grid.add(lblOwners, 0, 1);
         TextField ownersTextField = new TextField();
+        ownersTextField.setPromptText("e.g. 1234567AC,1234567AD");
         grid.add(ownersTextField, 1, 1);
 
         Label lblAddrs = new Label("Address:");
         grid.add(lblAddrs, 0, 2);
         TextField addrsTextField = new TextField();
+        addrsTextField.setPromptText("e.g. 5 Liffey Road, Ennis, County Clare");
         grid.add(addrsTextField, 1, 2);
 
         Label lblEircodde = new Label("Eircode:");
         grid.add(lblEircodde, 0, 3);
         TextField eircodeTextField = new TextField();
+        eircodeTextField.setPromptText("e.g. V95EY01");
         grid.add(eircodeTextField, 1, 3);
 
         Label lblEstMarketValue = new Label("Estimated Market Value:");
         grid.add(lblEstMarketValue, 0, 4);
         TextField valTextField = new TextField();
+        valTextField.setPromptText("e.g. 150000.00");
         grid.add(valTextField, 1, 4);
 
         Label lblLocationCategory = new Label("Location Category:");
@@ -392,7 +422,16 @@ public class App extends Application {
             scnDash = makeDashScene(primaryStage);
             primaryStage.setScene(scnDash);
         });
+
         btnConfirm.setOnAction(e -> {
+            String owner = ownersTextField.getText();
+            String address = addrsTextField.getText();
+            String eircode = eircodeTextField.getText();
+            double estValue = Double.parseDouble(valTextField.getText());
+            String locationCategory = cBoxLocationCategory.getPromptText();
+
+            // sm.registerProperty(owner, address, eircode, estValue, locationCategory,
+            // chkPrincipalResidence.isSelected());
             scnViewProp = makeViewPropScene(primaryStage);
             primaryStage.setScene(scnViewProp);
         });
@@ -426,6 +465,7 @@ public class App extends Application {
         Label lblPayOff = new Label("Pay Off:");
         grid.add(lblPayOff, 0, 3);
         TextField payTextField = new TextField();
+        payTextField.setPromptText("e.g. 1000");
         grid.add(payTextField, 1, 3);
 
         bp.setCenter(grid);
