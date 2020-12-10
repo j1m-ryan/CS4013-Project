@@ -3,6 +3,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -123,7 +127,7 @@ public class App extends Application {
                 a.show();
                 return;
             } else if (!sm.ownerExists(ppsNum)) {
-                Alert a = makeAlert("PPS Number does not exist!", "PPS Number Error", AlertType.ERROR);
+                Alert a = makeAlert("PPS Number does not exist!\nPlease Sign up", "PPS Number Error", AlertType.ERROR);
                 a.show();
                 return;
             } else if (!sm.loginVerification(ppsNum, pwBox.getText())) {
@@ -175,7 +179,11 @@ public class App extends Application {
             String name = userTextField.getText().trim();
             String pps = ppsBox.getText().trim().toUpperCase();
             String password = pwBox.getText().trim();
-            if (!sm.isValidppsNum(pps)) {
+            if (name.length() < 3) {
+                Alert a = makeAlert("Your name must be at least 3 letters!", "Invalid Name", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (!sm.isValidppsNum(pps)) {
                 Alert a = makeAlert("PPS Number must be in the form of 7 digits followed by 1 or 2 letters!",
                         "PPSN invalid", AlertType.ERROR);
                 a.show();
@@ -424,14 +432,57 @@ public class App extends Application {
         });
 
         btnConfirm.setOnAction(e -> {
-            String owner = ownersTextField.getText();
+            // validate!
+            String additionalOwners = ownersTextField.getText();
             String address = addrsTextField.getText();
             String eircode = eircodeTextField.getText();
-            double estValue = Double.parseDouble(valTextField.getText());
-            String locationCategory = cBoxLocationCategory.getPromptText();
+            String estimatedMarketValue = valTextField.getText();
+            String locationCategory = cBoxLocationCategory.getValue();
+            boolean isPrincipalPrivateResidence = chkPrincipalResidence.isSelected();
+            int year = Calendar.getInstance().get(Calendar.YEAR);
+            String[] additionalOwnersList = additionalOwners.split(",");
+            for (String additionalOwner : additionalOwnersList) {
+                if (!sm.isValidppsNum(additionalOwner.trim())) {
+                    if (additionalOwner.trim().length() == 0)
+                        continue;
+                    Alert a = makeAlert(
+                            "PPS Numbers must be in the form of 7 digits followed by 1 or 2 letters!\nThe PPSN "
+                                    + additionalOwner.trim() + " is not in this form",
+                            "PPSN invalid", AlertType.ERROR);
+                    a.show();
+                    return;
+                } else if (!sm.ownerExists(additionalOwner.trim())) {
+                    Alert a = makeAlert("Only signed up members can be registed on the app\nThe PPSN "
+                            + additionalOwner.trim() + " is unregistered", "Additional owner PPSN nonexistant",
+                            AlertType.ERROR);
+                    a.show();
+                    return;
+                } else if (additionalOwner.trim().equals(currentOwner.getPpsNum())) {
+                    Alert a = makeAlert("You cannot add yourself as an additional owner", "Additional owner error",
+                            AlertType.ERROR);
+                    a.show();
+                    return;
+                }
 
-            // sm.registerProperty(owner, address, eircode, estValue, locationCategory,
-            // chkPrincipalResidence.isSelected());
+            }
+            if (address.length() < 10) {
+                Alert a = makeAlert("Address must be at least 10 characters", "Address Invalid", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (!sm.isDouble(estimatedMarketValue)) {
+                Alert a = makeAlert("Market Value must be a number with only digit characters", "Market Value Invalid",
+                        AlertType.ERROR);
+                a.show();
+                return;
+            } else if (cBoxLocationCategory.getValue() == null) {
+                Alert a = makeAlert("Location Category Must Be Selected", "Location Invalid", AlertType.ERROR);
+                a.show();
+                return;
+            }
+
+            sm.registerProperty(year, currentOwner.getPpsNum() + "," + additionalOwners, address, eircode,
+                    estimatedMarketValue, locationCategory, isPrincipalPrivateResidence);
+
             scnViewProp = makeViewPropScene(primaryStage);
             primaryStage.setScene(scnViewProp);
         });
@@ -517,8 +568,35 @@ public class App extends Application {
     public Scene makeViewPropScene(Stage primaryStage) {
         Button btnBack = new Button("Back");
         BorderPane bp = makeBorderPaneWithBtnBarAndTable("My Properties", btnBack, "Eircode", "Address", "Owners",
-                "Value", "Tax Due", "Tax Overdue", "Total Owed");
+                "Value", "Tax Due");
         btnBack.setOnAction(e -> primaryStage.setScene(scnDash));
+        ArrayList<String> eircodes = sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum());
+        ArrayList<Property> properties = new ArrayList<>();
+        for (String eircode : eircodes) {
+            properties.add(sm.getPropertyData(eircode));
+        }
+        TableView<Property> table = new TableView<>();
+
+        TableColumn<Property, String> eircode = new TableColumn<>("Eircode");
+        TableColumn<Property, String> address = new TableColumn<>("Address");
+        TableColumn<Property, ArrayList<String>> ownersPPS = new TableColumn<>("Owners");
+        TableColumn<Property, String> estimatedMarketValue = new TableColumn<>("Value");
+
+        table.getColumns().add(eircode);
+        table.getColumns().add(address);
+        table.getColumns().add(ownersPPS);
+        table.getColumns().add(estimatedMarketValue);
+        ObservableList<Property> obslist = FXCollections.observableArrayList();
+        for (Property p : properties) {
+            obslist.add(p);
+
+        }
+        eircode.setCellValueFactory(new PropertyValueFactory<Property, String>("eircode"));
+        address.setCellValueFactory(new PropertyValueFactory<Property, String>("address"));
+        ownersPPS.setCellValueFactory(new PropertyValueFactory<Property, ArrayList<String>>("ownersPPS"));
+        estimatedMarketValue.setCellValueFactory(new PropertyValueFactory<Property, String>("estimatedMarketValue"));
+        table.setItems(obslist);
+        bp.setCenter(table);
         return new Scene(bp);
     }
 
