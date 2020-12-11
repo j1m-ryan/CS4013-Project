@@ -181,12 +181,12 @@ public class SystemManager  {
     
     // Overloaded with Eircode   (not sure about the year as it was not mentioned in specs)
     // method to get all over due properties for specified year and eircode area
-    public ArrayList<Record> getAllOverDueProps(int year, String eircode){
-        if(eircodeToLocation.containsKey(eircode)){
+    public ArrayList<Record> getAllOverDueProps(int year, String eircodeRoutingKey){
+        if(eircodeToLocation.containsKey(eircodeRoutingKey)){
             ArrayList<Record> allDueProps = getDataFromPaymentRecords(year, "unpaid");
             ArrayList<Record> ericodeMatchedProps = new ArrayList<Record>();
             for(Record rec : allDueProps){
-                if(rec.getEircodeRoutingKey().equalsIgnoreCase(eircode)){
+                if(rec.getEircodeRoutingKey().equalsIgnoreCase(eircodeRoutingKey)){
                     ericodeMatchedProps.add(rec);
                 }
             }
@@ -242,24 +242,22 @@ public class SystemManager  {
     }
 
     // method to pay the tax for specified year of a property
-    public Boolean makePayment(int year, String eircode, double paid){
+    public boolean makePayment(int year, String eircode){
         ArrayList<Record> temp = new ArrayList<Record>();
         temp = getPaymentRecords(year, eircode);
         for(Record rec : temp){
-            if(rec.getTaxAmount() == paid){
-                rec.setPaymentStatus("paid");
-                return true;
-            }
+            rec.setPaymentStatus("paid");
+            return true;
         }
         return false;
     }
     
-    // method to display tax stats for a specified Eircode area
+    // method to display tax stats for a specified eircodeRoutingKey 
     // returned is an array of {totalTaxPaid, avgTaxPaid, numOfTaxPaidProperties, percentageOfPropTaxPaid}
-    public double[] getTaxStats(int year, String eircode){
-        double totalTaxPaid = totalTaxPaid(year, eircode);
-        int totalProps = totalNumOfProperties(eircode);
-        ArrayList<Record> taxNotPaidProps = getAllOverDueProps( year,  eircode);
+    public double[] getTaxStats(int year, String eircodeRoutingKey){
+        double totalTaxPaid = totalTaxPaid(year, eircodeRoutingKey);
+        int totalProps = totalNumOfProperties(eircodeRoutingKey);
+        ArrayList<Record> taxNotPaidProps = getAllOverDueProps( year,  eircodeRoutingKey);
         double numOfTaxPaidProperties = totalProps - taxNotPaidProps.size();
         double avgTaxPaid = totalTaxPaid/numOfTaxPaidProperties;
         double percentageOfPropTaxPaid = ((numOfTaxPaidProperties/totalProps) * 100);
@@ -267,8 +265,8 @@ public class SystemManager  {
         return allCombined;
     }
     
-    // method for counting number of registered properties for a specified Eircode
-    private int totalNumOfProperties(String eircode){
+    // method for counting number of registered properties for a specified eircodeRoutingKey
+    private int totalNumOfProperties(String eircodeRoutingKey){
         int count = 0;
         for(String k : registeredProperties.keySet()){
             if(registeredProperties.get(k).getEircodeRoutingKey().equalsIgnoreCase(eircode)){
@@ -278,10 +276,10 @@ public class SystemManager  {
         return count;
     }
 
-    // method to get total tax paid by all properties in specified eircode
-    private double totalTaxPaid(int year, String eircode){
+    // method to get total tax paid by all properties in specified eircodeRoutingKey
+    private double totalTaxPaid(int year, String eircodeRoutingKey){
         ArrayList<Record> taxPaidProps = getDataFromPaymentRecords(year,  "paid");
-        ArrayList<Record> filteredRecords =getMatchingEircoderecords(taxPaidProps, eircode);
+        ArrayList<Record> filteredRecords =getMatchingEircoderecords(taxPaidProps, eircodeRoutingKey);
         double sum = 0;
         for(Record rec : filteredRecords){
             sum += rec.getTaxAmount();
@@ -289,12 +287,12 @@ public class SystemManager  {
         return sum;
     }
 
-    //method to filter records with specified eircode
-    private ArrayList<Record> getMatchingEircoderecords(ArrayList<Record> allRecords, String eircode){
-        if(eircodeToLocation.containsKey(eircode)){
+    //method to filter records with specified eircodeRoutingKey
+    private ArrayList<Record> getMatchingEircoderecords(ArrayList<Record> allRecords, String eircodeRoutingKey){
+        if(eircodeToLocation.containsKey(eircodeRoutingKey)){
             ArrayList<Record> matchingRecords = new ArrayList<Record>();
             for(Record rec : allRecords){
-                if(rec.getEircodeRoutingKey().equalsIgnoreCase(eircode)){
+                if(rec.getEircodeRoutingKey().equalsIgnoreCase(eircodeRoutingKey)){
                     matchingRecords.add(rec);
                 }
             }
