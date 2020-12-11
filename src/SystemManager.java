@@ -11,7 +11,6 @@ public class SystemManager  {
     HashMap<String, String> eircodeToLocation = new HashMap<>();
     HashMap<String, String> locationToEircode = new HashMap<>();
     
-    private int uniquePropertyId = 0;
     private LocalDate currentDate;
     private int minYear = 1900;
 
@@ -170,7 +169,7 @@ public class SystemManager  {
     }
 
     // method to calcuclate property tax
-    private double calculateTax(String eircode){
+    public double calculateTax(String eircode){
         return 100;
     }
 
@@ -187,7 +186,7 @@ public class SystemManager  {
             ArrayList<Record> allDueProps = getDataFromPaymentRecords(year, "unpaid");
             ArrayList<Record> ericodeMatchedProps = new ArrayList<Record>();
             for(Record rec : allDueProps){
-                if(rec.getEricodeFirstThreeChars().equalsIgnoreCase(eircode)){
+                if(rec.getEircodeRoutingKey().equalsIgnoreCase(eircode)){
                     ericodeMatchedProps.add(rec);
                 }
             }
@@ -272,7 +271,7 @@ public class SystemManager  {
     private int totalNumOfProperties(String eircode){
         int count = 0;
         for(String k : registeredProperties.keySet()){
-            if(registeredProperties.get(k).getEircodeFirstThreeChars().equalsIgnoreCase(eircode)){
+            if(registeredProperties.get(k).getEircodeRoutingKey().equalsIgnoreCase(eircode)){
                 count++;
             }
         }
@@ -295,7 +294,7 @@ public class SystemManager  {
         if(eircodeToLocation.containsKey(eircode)){
             ArrayList<Record> matchingRecords = new ArrayList<Record>();
             for(Record rec : allRecords){
-                if(rec.getEricodeFirstThreeChars().equalsIgnoreCase(eircode)){
+                if(rec.getEircodeRoutingKey().equalsIgnoreCase(eircode)){
                     matchingRecords.add(rec);
                 }
             }
