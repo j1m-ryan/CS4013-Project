@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,7 +34,7 @@ import javafx.stage.Stage;
 public class App extends Application {
     Scene scnWelcome, scnAbout, scnLogin, scnSignUp, scnDepLogin, scnDash, scnDepDash, scnRegProp, scnPayTax,
             scnViewChoice, scnViewProp, scnPrevPayments, scnOverdueProp, scnPropTaxStat, scnPayData, scnYearBalance,
-            scnPropBalance, scnOverduePropTable, scnPropPayment;
+            scnPropBalance, scnOverduePropTable, scnPropPayment, scnProp;
     SystemManager sm;
     Owner currentOwner;
 
@@ -242,8 +241,8 @@ public class App extends Application {
         Button btnBack = new Button("Logout");
         BorderPane bp = makeNewBorderPaneWithBtnBar("Owner Dashboard", btnBack);
         GridPane grid = makeNewGridPane();
-        Label lblPPSN = new Label("PPSN:" + currentOwner.getPpsNum());
-        Label lblName = new Label("Name:" + currentOwner.getName());
+        Label lblPPSN = new Label("PPSN :" + currentOwner.getPpsNum());
+        Label lblName = new Label("Name: " + currentOwner.getName());
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
         BorderPane bpTOP = new BorderPane();
@@ -267,7 +266,8 @@ public class App extends Application {
         bottomGrid.add(txtPropBalSTM, 0, 1);
 
         ObservableList<String> optYears = FXCollections.observableArrayList("2020", "2019", "2018");
-        ObservableList<String> optEircodes = FXCollections.observableArrayList("V12T234", "E56I789", "F74K675");
+        ObservableList<String> optEircodes = FXCollections
+                .observableArrayList(sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum()));
 
         final ComboBox<String> cBoxYear = new ComboBox<>(optYears);
         final ComboBox<String> cBoxEirCcde = new ComboBox<>(optEircodes);
@@ -325,6 +325,19 @@ public class App extends Application {
             scnViewChoice = makeViewPropChoice(primaryStage);
             primaryStage.setScene(scnViewChoice);
         });
+
+        ArrayList<String> properties = sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum());
+        double total = 0;
+        for (String s : properties) {
+            total += sm.calculateTax(s);
+        }
+        String displayTotal = Double.toString(total);
+        Label lblTotalTax = new Label("Total Tax Due:");
+        btnGrid.add(lblTotalTax, 0, 3);
+        Text txtTotalTax = new Text();
+        txtTotalTax.setText(displayTotal);
+        btnGrid.add(txtTotalTax, 1, 3);
+
         bp.setCenter(bpCENTER);
         bp.setTop(bpTOP);
 
@@ -435,7 +448,7 @@ public class App extends Application {
             // validate!
             String additionalOwners = ownersTextField.getText();
             String address = addrsTextField.getText();
-            String eircode = eircodeTextField.getText();
+            String eircode = eircodeTextField.getText().toUpperCase();
             String estimatedMarketValue = valTextField.getText();
             String locationCategory = cBoxLocationCategory.getValue();
             boolean isPrincipalPrivateResidence = chkPrincipalResidence.isSelected();
@@ -497,13 +510,16 @@ public class App extends Application {
             scnDash = makeDashScene(primaryStage);
             primaryStage.setScene(scnDash);
         });
-
+        btnPay.setOnAction(e -> {
+            
+        });
         BorderPane bp = makeNewBorderPaneWithBtnBar("Pay Tax", btnBack, btnPay);
         GridPane grid = makeNewGridPane();
 
         Label lblProp = new Label("Property:");
         grid.add(lblProp, 0, 1);
-        ObservableList<String> optProperties = FXCollections.observableArrayList("V12T234", "E56I789", "F74K675");
+        ObservableList<String> optProperties = FXCollections
+                .observableArrayList(sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum()));
         final ComboBox<String> cBoxProperties = new ComboBox<>(optProperties);
         grid.add(cBoxProperties, 1, 1);
 
@@ -512,13 +528,13 @@ public class App extends Application {
         Text bal = new Text();
         bal.setText("0");
         grid.add(bal, 1, 2);
+        grid.add(btnPay, 2, 2);
 
-        Label lblPayOff = new Label("Pay Off:");
-        grid.add(lblPayOff, 0, 3);
-        TextField payTextField = new TextField();
-        payTextField.setPromptText("e.g. 1000");
-        grid.add(payTextField, 1, 3);
-
+        cBoxProperties.setOnAction(e -> {
+            if (cBoxProperties.getValue() == null)
+                return;
+            bal.setText(Double.toString(sm.calculateTax(cBoxProperties.getValue())));
+        });
         bp.setCenter(grid);
         return new Scene(bp);
     }
@@ -567,9 +583,17 @@ public class App extends Application {
 
     public Scene makeViewPropScene(Stage primaryStage) {
         Button btnBack = new Button("Back");
+        Button btnConfirm = new Button("Confirm");
+        BorderPane bottomPane = new BorderPane();
+        GridPane dropGrid = makeNewGridPane();
+        GridPane btnGrid = makeNewGridPane();
+
         BorderPane bp = makeBorderPaneWithBtnBarAndTable("My Properties", btnBack, "Eircode", "Address", "Owners",
                 "Value", "Tax Due");
-        btnBack.setOnAction(e -> primaryStage.setScene(scnDash));
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
         ArrayList<String> eircodes = sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum());
         ArrayList<Property> properties = new ArrayList<>();
         for (String eircode : eircodes) {
@@ -579,24 +603,124 @@ public class App extends Application {
 
         TableColumn<Property, String> eircode = new TableColumn<>("Eircode");
         TableColumn<Property, String> address = new TableColumn<>("Address");
-        TableColumn<Property, ArrayList<String>> ownersPPS = new TableColumn<>("Owners");
+        TableColumn<Property, String> locationCatgeory = new TableColumn<>("Location Category");
         TableColumn<Property, String> estimatedMarketValue = new TableColumn<>("Value");
-
+        // TableColumn<Property, String> taxDue = new TableColumn<>("Tax Due");
+        eircode.setSortable(false);
+        address.setSortable(false);
+        locationCatgeory.setSortable(false);
+        estimatedMarketValue.setSortable(false);
+        // taxDue.setSortable(false);
         table.getColumns().add(eircode);
         table.getColumns().add(address);
-        table.getColumns().add(ownersPPS);
+        table.getColumns().add(locationCatgeory);
         table.getColumns().add(estimatedMarketValue);
+        // table.getColumns().add(taxDue);
         ObservableList<Property> obslist = FXCollections.observableArrayList();
+        ArrayList<Double> doubleList = new ArrayList<>();
         for (Property p : properties) {
             obslist.add(p);
+            doubleList.add(sm.calculateTax(p.getEircode()));
 
         }
         eircode.setCellValueFactory(new PropertyValueFactory<Property, String>("eircode"));
         address.setCellValueFactory(new PropertyValueFactory<Property, String>("address"));
-        ownersPPS.setCellValueFactory(new PropertyValueFactory<Property, ArrayList<String>>("ownersPPS"));
+        locationCatgeory.setCellValueFactory(new PropertyValueFactory<Property, String>("locationCatgeory"));
         estimatedMarketValue.setCellValueFactory(new PropertyValueFactory<Property, String>("estimatedMarketValue"));
+        // taxDue.getColumns().add(doubleList);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setItems(obslist);
+
+        ObservableList<String> optEircodes = FXCollections
+                .observableArrayList(sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum()));
+        final ComboBox<String> cBoxEirCcde = new ComboBox<>(optEircodes);
+
+        dropGrid.add(cBoxEirCcde, 0, 0);
+        dropGrid.add(btnConfirm, 1, 0);
+        btnGrid.add(btnBack, 0, 0);
+
+        btnConfirm.setOnAction(e -> {
+            if (cBoxEirCcde.getValue() == null) {
+                return;
+            }
+            scnProp = makePropScene(primaryStage, cBoxEirCcde.getValue());
+            primaryStage.setScene(scnProp);
+        });
+
         bp.setCenter(table);
+        bp.setBottom(bottomPane);
+        bottomPane.setRight(dropGrid);
+        bottomPane.setLeft(btnGrid);
+        return new Scene(bp);
+    }
+
+    private Scene makePropScene(Stage primaryStage, String eircode) {
+        Property p = sm.getPropertyData(eircode);
+        Button btnBack = new Button("Back");
+        Button btnBackProp = new Button("My Properties");
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
+        btnBackProp.setOnAction(e -> {
+            scnViewProp = makeViewPropScene(primaryStage);
+            primaryStage.setScene(scnViewProp);
+        });
+        ArrayList<String> ownersList = p.getOwnersPps();
+
+        StringBuilder sb = new StringBuilder();
+        for (String s : ownersList) {
+            sb.append(s);
+            sb.append("  ");
+        }
+
+        System.out.println(sb.toString());
+
+        BorderPane bp = makeNewBorderPaneWithBtnBar("Property Info", btnBack, btnBackProp);
+        GridPane grid = makeNewGridPane();
+
+        Label lblOwners = new Label("Owner(s) PPSN:");
+        grid.add(lblOwners, 0, 1);
+        Text txtPPSN = new Text();
+        txtPPSN.setText(sb.toString());
+        grid.add(txtPPSN, 1, 1);
+
+        Label lblEircodde = new Label("Eircode:");
+        grid.add(lblEircodde, 0, 2);
+        Text txtEircode = new Text();
+        txtEircode.setText(p.getEircode());
+        grid.add(txtEircode, 1, 2);
+
+        Label lblAddrs = new Label("Address:");
+        grid.add(lblAddrs, 0, 3);
+        Text txtAddrs = new Text();
+        txtAddrs.setText(p.getAddress());
+        grid.add(txtAddrs, 1, 3);
+
+        Label lblLocationCategory = new Label("Location Category:");
+        grid.add(lblLocationCategory, 0, 4);
+        Text txtLocationCategory = new Text();
+        txtLocationCategory.setText(p.getLocationCatgeory());
+        grid.add(txtLocationCategory, 1, 4);
+
+        Label lblEstMarketValue = new Label("Estimated Market Value:");
+        grid.add(lblEstMarketValue, 0, 5);
+        Text txtEstMarketValue = new Text();
+        txtEstMarketValue.setText(p.getEstimatedMarketValue());
+        grid.add(txtEstMarketValue, 1, 5);
+
+        Label lblTaxDue = new Label("Tax Due:");
+        grid.add(lblTaxDue, 0, 6);
+        Text txtTaxDue = new Text();
+        txtTaxDue.setText(Double.toString(sm.calculateTax(eircode)));
+        grid.add(txtTaxDue, 1, 6);
+
+        bp.setCenter(grid);
+        btnBack.setOnAction(e -> {
+            scnDash = makeDashScene(primaryStage);
+            primaryStage.setScene(scnDash);
+        });
+
         return new Scene(bp);
     }
 

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.StringTokenizer;
 public class SystemManager  {
     HashMap<String, Owner> owners = new HashMap<String, Owner>();
+    HashMap<String, Employee> employees = new HashMap<String, Employee>();
     HashMap<String, Property> registeredProperties = new HashMap<String, Property>();
     HashMap<Integer, ArrayList<Record>> paymentRecords = new HashMap<Integer, ArrayList<Record>>();
     
@@ -37,7 +38,8 @@ public class SystemManager  {
                                       ArrayList<String> ownersData,
                                       ArrayList<String> ownerPropertylinks,
                                       ArrayList<String> paymentRecords,
-                                      ArrayList<String> eircodesAndCounties){
+                                      ArrayList<String> eircodesAndCounties,
+                                      ArrayList<String> empolyeesData){
         // loading registeredOwners data
         for(String ownerData : ownersData){
             ArrayList<String> separatedData = separateWordsInLine(ownerData);
@@ -62,13 +64,19 @@ public class SystemManager  {
         for(String eirCounty : eircodesAndCounties){
             StringTokenizer temp = new StringTokenizer(eirCounty, " ,");
             addEircodeToLocation(temp.nextToken(), temp.nextToken());
-            }
+        }
+
+        // loading registered employees data
+        for(String employeeData : empolyeesData){
+            StringTokenizer temp = new StringTokenizer(employeeData, " ,");
+            registerEmployee(temp.nextToken(), temp.nextToken(), temp.nextToken());
+        }
     }
 
     // methods to update all database of registered owerns, properties and records
    
 
-
+    
 
 
     // helper method to separate each word in line and send back separated words as arraylist
@@ -114,6 +122,11 @@ public class SystemManager  {
         }
         registeredProperties.put(propDetails.get(1), new Property(propDetails.get(0),propDetails.get(1),
         propDetails.get(2),propDetails.get(3), isPrincipalPrivateResidence));
+    }
+
+    // method to register department employee
+    public void registerEmployee(String name, String workId, String password){
+        employees.put(workId, (new Employee(name, workId, password)));
     }
 
     // method to register owner
@@ -351,7 +364,14 @@ public class SystemManager  {
         return password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$");
     }
     
-
+    public boolean isDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
     /**
 
     private void updatePropertyData(Property property){}
