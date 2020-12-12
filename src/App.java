@@ -33,10 +33,11 @@ import javafx.stage.Stage;
 
 public class App extends Application {
     Scene scnWelcome, scnAbout, scnLogin, scnSignUp, scnDepLogin, scnDash, scnDepDash, scnRegProp, scnPayTax,
-            scnViewChoice, scnViewProp, scnPrevPayments, scnOverdueProp, scnPropTaxStat, scnPayData, scnYearBalance,
-            scnPropBalance, scnOverduePropTable, scnPropPayment, scnProp;
+            scnViewProp, scnPrevPayments, scnOverdueProp, scnPropTaxStat, scnPayData, scnYearBalance, scnPropBalance,
+            scnOverduePropTable, scnPropPayment, scnProp, scnDepSignUp;
     SystemManager sm;
     Owner currentOwner;
+    Employee currentEmployee;
 
     public static void main(String args[]) {
         launch(args);
@@ -215,12 +216,13 @@ public class App extends Application {
     public Scene makeDepLoginScene(Stage primaryStage) {
         Button btnBack = new Button("Back");
         Button btnLogin = new Button("Login");
-        BorderPane bp = makeNewBorderPaneWithBtnBar("Department Login", btnBack, btnLogin);
+        Button btnSignup = new Button("Employee Sign Up");
+        BorderPane bp = makeNewBorderPaneWithBtnBar("Department Login", btnBack, btnLogin, btnSignup);
         GridPane grid = makeNewGridPane();
         Label lblWorkID = new Label("Work ID");
         grid.add(lblWorkID, 0, 1);
         TextField userTextField = new TextField();
-        userTextField.setPromptText("e.g. 2134324");
+        userTextField.setPromptText("e.g. 12345678");
         grid.add(userTextField, 1, 1);
         Label lblPW = new Label("Password");
         grid.add(lblPW, 0, 2);
@@ -230,8 +232,90 @@ public class App extends Application {
 
         btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
         btnLogin.setOnAction(e -> {
+            String ppsNum = userTextField.getText().trim().toUpperCase();
+            if (!sm.isValidWID(ppsNum)) {
+                Alert a = makeAlert("Work ID must be 8 digits!", "Work ID invalid", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (!sm.employeeExists(ppsNum)) {
+                Alert a = makeAlert("This Work ID does not exist!\nPlease Sign up", "Work ID Error", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (!sm.depLoginVerification(ppsNum, pwBox.getText())) {
+                Alert a = makeAlert("Employee Login failed!", "Employee Login Error", AlertType.ERROR);
+                a.show();
+                return;
+            }
+            currentEmployee = sm.getEmployee(userTextField.getText());
+
             scnDepDash = makeDepDashScene(primaryStage);
             primaryStage.setScene(scnDepDash);
+        });
+
+        btnSignup.setOnAction(e -> {
+            scnDepSignUp = makeDepSignUpScene(primaryStage);
+            primaryStage.setScene(scnDepSignUp);
+
+        });
+
+        return new Scene(bp);
+    }
+
+    public Scene makeDepSignUpScene(Stage primaryStage) {
+        Button btnBack = new Button("Cancel");
+        Button btnSignUp = new Button("Sign Up");
+        BorderPane bp = makeNewBorderPaneWithBtnBar("Department Signup", btnBack, btnSignUp);
+        GridPane grid = makeNewGridPane();
+        Label lblName = new Label("Name");
+        grid.add(lblName, 0, 1);
+        TextField userTextField = new TextField();
+        userTextField.setPromptText("e.g. John Smith");
+        grid.add(userTextField, 1, 1);
+        Label lblPPSN = new Label("Work ID");
+        grid.add(lblPPSN, 0, 2);
+        TextField ppsBox = new TextField();
+        ppsBox.setPromptText("e.g. 12345678");
+        grid.add(ppsBox, 1, 2);
+        Label lblPW = new Label("Password");
+        grid.add(lblPW, 0, 3);
+        PasswordField pwBox = new PasswordField();
+        grid.add(pwBox, 1, 3);
+        bp.setCenter(grid);
+
+        btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
+        btnSignUp.setOnAction(e -> {
+            String name = userTextField.getText().trim();
+            String pps = ppsBox.getText().trim().toUpperCase();
+            String password = pwBox.getText().trim();
+            if (name.length() < 3) {
+                Alert a = makeAlert("Your name must be at least 3 letters!", "Invalid Name", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (!sm.isValidWID(pps)) {
+                Alert a = makeAlert("Work ID must be 8 digits!", "Work ID invalid", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (!sm.isValidPassword(password)) {
+                Alert a = makeAlert(
+                        "Password Requirements. \nAt least one upper case English letter,\nAt least one lower case English letter, \nAt least one digit, \nAt least one special character, \nMinimum eight in length.",
+                        "Password invalid!", AlertType.ERROR);
+                a.show();
+                return;
+            } else if (sm.employeeExists(pps)) {
+                Alert a = makeAlert("Employee already exists, please log in!", "Employee already exists!",
+                        AlertType.ERROR);
+                a.show();
+                return;
+            } else {
+                sm.registerEmployee(name, pps, password);
+                Alert a = makeAlert("Employee Registered!", "Employee Registered!", AlertType.INFORMATION);
+                a.show();
+                currentEmployee = sm.getEmployee(pps);
+                scnDepDash = makeDepDashScene(primaryStage);
+                primaryStage.setScene(scnDepDash);
+
+            }
+
         });
 
         return new Scene(bp);
@@ -259,29 +343,16 @@ public class App extends Application {
         bpCENTER.setBottom(bottomGrid);
 
         Text txtYearBalSTM = new Text();
-        Text txtPropBalSTM = new Text();
-        txtYearBalSTM.setText("Get Yearly Balancing Statement:");
-        txtPropBalSTM.setText("Get Balancing Statement for Property:");
+        txtYearBalSTM.setText("Get Balancing Statement: ");
         bottomGrid.add(txtYearBalSTM, 0, 0);
-        bottomGrid.add(txtPropBalSTM, 0, 1);
 
-        ObservableList<String> optYears = FXCollections.observableArrayList("2020", "2019", "2018");
-        ObservableList<String> optEircodes = FXCollections
-                .observableArrayList(sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum()));
-
-        final ComboBox<String> cBoxYear = new ComboBox<>(optYears);
-        final ComboBox<String> cBoxEirCcde = new ComboBox<>(optEircodes);
-        bottomGrid.add(cBoxYear, 1, 0);
-        cBoxYear.setMinWidth(120);
-        cBoxEirCcde.setMinWidth(120);
-        bottomGrid.add(cBoxEirCcde, 1, 1);
         ArrayList<Button> buttons = new ArrayList<>();
         Button btnRegProperty = new Button("Register Property");
         Button btnPayTax = new Button("Pay Tax");
         Button btnViewProperty = new Button("View My Properties");
         Button btnPrevPayment = new Button("Previous Payments");
         Button btnConfirmYear = new Button("Confirm");
-        Button btnConfirmProperty = new Button("Confirm");
+
         buttons.addAll(
                 new ArrayList<Button>(Arrays.asList(btnRegProperty, btnPayTax, btnViewProperty, btnPrevPayment)));
         for (Button b : buttons) {
@@ -294,7 +365,6 @@ public class App extends Application {
         btnGrid.add(btnPrevPayment, 1, 1);
 
         bottomGrid.add(btnConfirmYear, 2, 0);
-        bottomGrid.add(btnConfirmProperty, 2, 1);
 
         btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
         btnRegProperty.setOnAction(e -> {
@@ -310,20 +380,14 @@ public class App extends Application {
             primaryStage.setScene(scnPrevPayments);
         });
         btnConfirmYear.setOnAction(e -> {
-            if (cBoxYear.getValue() == null)
-                return;
-            scnYearBalance = makeYearlyBalancingStatementScene(primaryStage, cBoxYear.getValue());
+
+            scnYearBalance = makeYearlyBalancingStatementScene(primaryStage);
             primaryStage.setScene(scnYearBalance);
         });
-        btnConfirmProperty.setOnAction(e -> {
-            if (cBoxEirCcde.getValue() == null)
-                return;
-            scnPropBalance = makePropBalancingStatementScene(primaryStage, cBoxEirCcde.getValue());
-            primaryStage.setScene(scnPropBalance);
-        });
+
         btnViewProperty.setOnAction(e -> {
-            scnViewChoice = makeViewPropChoice(primaryStage);
-            primaryStage.setScene(scnViewChoice);
+            scnViewProp = makeViewPropScene(primaryStage);
+            primaryStage.setScene(scnViewProp);
         });
 
         ArrayList<String> properties = sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum());
@@ -348,7 +412,7 @@ public class App extends Application {
         Button btnBack = new Button("Logout");
         BorderPane bp = makeNewBorderPaneWithBtnBar("Department Dashboard", btnBack);
         GridPane grid = makeNewGridPane();
-        Label lblWorkID = new Label("Work ID:");
+        Label lblWorkID = new Label("Work ID: " + currentEmployee.getWorkId());
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
         BorderPane bpTOP = new BorderPane();
@@ -448,7 +512,7 @@ public class App extends Application {
             // validate!
             String additionalOwners = ownersTextField.getText();
             String address = addrsTextField.getText();
-            String eircode = eircodeTextField.getText().toUpperCase();
+            String eircode = eircodeTextField.getText().toUpperCase().trim();
             String estimatedMarketValue = valTextField.getText();
             String locationCategory = cBoxLocationCategory.getValue();
             boolean isPrincipalPrivateResidence = chkPrincipalResidence.isSelected();
@@ -482,6 +546,12 @@ public class App extends Application {
                 Alert a = makeAlert("Address must be at least 10 characters", "Address Invalid", AlertType.ERROR);
                 a.show();
                 return;
+            } else if (!sm.isValidEircode(eircode)) {
+                Alert a = makeAlert(
+                        "This Eircode is invalid\nValid Eircodes have the following properties:\nThey begin with an valid eircode prefix such as V95\nThey contain only alpha numeric characters\nThey are 7 characters long\n*Example: V95EY99",
+                        "Eircode Invalid", AlertType.ERROR);
+                a.show();
+                return;
             } else if (!sm.isDouble(estimatedMarketValue)) {
                 Alert a = makeAlert("Market Value must be a number with only digit characters", "Market Value Invalid",
                         AlertType.ERROR);
@@ -510,9 +580,7 @@ public class App extends Application {
             scnDash = makeDashScene(primaryStage);
             primaryStage.setScene(scnDash);
         });
-        btnPay.setOnAction(e -> {
-            
-        });
+
         BorderPane bp = makeNewBorderPaneWithBtnBar("Pay Tax", btnBack, btnPay);
         GridPane grid = makeNewGridPane();
 
@@ -536,48 +604,15 @@ public class App extends Application {
             bal.setText(Double.toString(sm.calculateTax(cBoxProperties.getValue())));
         });
         bp.setCenter(grid);
-        return new Scene(bp);
-    }
 
-    public Scene makeViewPropChoice(Stage primaryStage) {
-        Button btnBack = new Button("Back");
-        Button btnConfirm = new Button("Confirm");
-        Button btnViewProperty = new Button("All");
-        BorderPane bp = makeNewBorderPaneWithBtnBar("View Properties", btnBack);
-        btnBack.setOnAction(e -> {
-            scnDash = makeDashScene(primaryStage);
-            primaryStage.setScene(scnDash);
-        });
-        btnViewProperty.setOnAction(e -> {
-            scnViewProp = makeViewPropScene(primaryStage);
-            primaryStage.setScene(scnViewProp);
-        });
-
-        GridPane btnGrid = makeNewGridPane();
-
-        Label lblViewAll = new Label("View Properties:");
-        Label lblViewByYear = new Label("View By Year:");
-        ObservableList<String> optYears = FXCollections.observableArrayList("2020", "2019", "2018");
-        final ComboBox<String> cBoxYear = new ComboBox<>(optYears);
-        btnConfirm.setOnAction(e -> {
-            if (cBoxYear.getValue() == null) {
+        btnPay.setOnAction(e -> {
+            if (cBoxProperties.getValue() == null) {
                 return;
-            } else {
-                scnPropBalance = makeViewPropScene(primaryStage, cBoxYear.getValue());
-                primaryStage.setScene(scnPropBalance);
             }
-            return;
+            sm.makePayment(Calendar.getInstance().get(Calendar.YEAR), cBoxProperties.getValue());
+            scnPrevPayments = makePrevPayments(primaryStage);
+            primaryStage.setScene(scnPrevPayments);
         });
-        btnGrid.add(lblViewAll, 0, 0);
-        btnGrid.add(btnViewProperty, 1, 0);
-        btnGrid.add(lblViewByYear, 0, 2);
-        btnGrid.add(cBoxYear, 1, 2);
-        btnGrid.add(btnConfirm, 2, 2);
-
-        btnViewProperty.setMinWidth(80);
-        cBoxYear.setMinWidth(80);
-
-        bp.setCenter(btnGrid);
         return new Scene(bp);
     }
 
@@ -726,13 +761,48 @@ public class App extends Application {
 
     public Scene makePrevPayments(Stage primaryStage) {
         Button btnBack = new Button("Back");
-        BorderPane bp = makeBorderPaneWithBtnBarAndTable("Pevious Payments", btnBack, "Eircode", "Address", "Owners",
-                "Value", "Tax Due", "Paid");
+        BorderPane bp = makeBorderPaneWithBtnBarAndTable("Previous Payments (Paid Records)", btnBack, "Eircode",
+                "Address", "Owners", "Value", "Tax Due", "Paid");
+        ArrayList<Record> paidRecords = new ArrayList<Record>();
+        ArrayList<String> eircodes = sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum());
+        for (String eircode : eircodes) {
+            ArrayList<Record> recordsTemp = sm.getPaymentRecords(eircode);
+            for (Record r : recordsTemp) {
+                if (r.getPaymentStatus().equalsIgnoreCase("paid")) {
+                    paidRecords.add(r);
+                }
+            }
+        }
+
+        TableView<Record> table = new TableView<>();
+
+        TableColumn<Record, String> eircode = new TableColumn<>("Eircode");
+        TableColumn<Record, String> eircodeRoutingKey = new TableColumn<>("Eircode Routing Key");
+        TableColumn<Record, Integer> year = new TableColumn<>("Year");
+
+        eircode.setSortable(false);
+        eircodeRoutingKey.setSortable(false);
+        year.setSortable(false);
+
+        table.getColumns().add(eircode);
+        table.getColumns().add(eircodeRoutingKey);
+        table.getColumns().add(year);
+        ObservableList<Record> obslist = FXCollections.observableArrayList();
+        for (Record p : paidRecords) {
+            obslist.add(p);
+
+        }
+        eircode.setCellValueFactory(new PropertyValueFactory<Record, String>("eircode"));
+        eircodeRoutingKey.setCellValueFactory(new PropertyValueFactory<Record, String>("eircodeRoutingKey"));
+        year.setCellValueFactory(new PropertyValueFactory<Record, Integer>("year"));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setItems(obslist);
+        bp.setCenter(table);
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
             primaryStage.setScene(scnDash);
         });
-        return new Scene(bp, 600, 400);
+        return new Scene(bp);
     }
 
     public Scene makeOverdueProp(Stage primaryStage) {
@@ -744,7 +814,7 @@ public class App extends Application {
             primaryStage.setScene(scnDepDash);
         });
         // Need to go back and check if prefix is valid using system manager
-        Label lblWorkID = new Label("Work ID:");
+        Label lblWorkID = new Label("Work ID: " + currentEmployee.getWorkId());
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
         BorderPane bpTOP = new BorderPane();
@@ -789,28 +859,80 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    public Scene makeOverduePropTableScene(Stage primaryStage, String year) {
+    public Scene makeOverduePropTableScene(Stage primaryStage, String yearIn) {
         Button btnBack = new Button("Back");
-        String titleText = "View all overdue properties in " + year;
+        String titleText = "View all overdue properties in " + yearIn;
         BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Eircode", "Address", "Owners", "Value",
                 "Tax Due");
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
             primaryStage.setScene(scnDepDash);
         });
+        ArrayList<Record> paidRecords = sm.getOverDuePropsPerYear(Integer.parseInt(yearIn));
+
+        TableView<Record> table = new TableView<>();
+
+        TableColumn<Record, String> eircode = new TableColumn<>("Eircode");
+        TableColumn<Record, String> eircodeRoutingKey = new TableColumn<>("Eircode Routing Key");
+        TableColumn<Record, Integer> year = new TableColumn<>("Year");
+
+        eircode.setSortable(false);
+        eircodeRoutingKey.setSortable(false);
+        year.setSortable(false);
+
+        table.getColumns().add(eircode);
+        table.getColumns().add(eircodeRoutingKey);
+        table.getColumns().add(year);
+        ObservableList<Record> obslist = FXCollections.observableArrayList();
+        for (Record p : paidRecords) {
+            obslist.add(p);
+
+        }
+        eircode.setCellValueFactory(new PropertyValueFactory<Record, String>("eircode"));
+        eircodeRoutingKey.setCellValueFactory(new PropertyValueFactory<Record, String>("eircodeRoutingKey"));
+        year.setCellValueFactory(new PropertyValueFactory<Record, Integer>("year"));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setItems(obslist);
+        bp.setCenter(table);
         return new Scene(bp);
     }
 
-    public Scene makeOverduePropTableScene(Stage primaryStage, String year, String eircode) {
+    public Scene makeOverduePropTableScene(Stage primaryStage, String yearIn, String eircodeIn) {
         Button btnBack = new Button("Back");
         String eircodeLocation = "DEFAULT MUST CHANGE";
-        String titleText = "View all overdue properties in " + year + " at " + eircodeLocation;
+        String titleText = "View all overdue properties in the year " + yearIn + " at " + eircodeLocation;
         BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Eircode", "Address", "Owners", "Value",
                 "Tax Due");
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
             primaryStage.setScene(scnDepDash);
         });
+        ArrayList<Record> paidRecords = sm.getAllOverDueProps(Integer.parseInt(yearIn), eircodeIn);
+
+        TableView<Record> table = new TableView<>();
+
+        TableColumn<Record, String> eircode = new TableColumn<>("Eircode");
+        TableColumn<Record, String> eircodeRoutingKey = new TableColumn<>("Eircode Routing Key");
+        TableColumn<Record, Integer> year = new TableColumn<>("Year");
+
+        eircode.setSortable(false);
+        eircodeRoutingKey.setSortable(false);
+        year.setSortable(false);
+
+        table.getColumns().add(eircode);
+        table.getColumns().add(eircodeRoutingKey);
+        table.getColumns().add(year);
+        ObservableList<Record> obslist = FXCollections.observableArrayList();
+        for (Record p : paidRecords) {
+            obslist.add(p);
+
+        }
+        eircode.setCellValueFactory(new PropertyValueFactory<Record, String>("eircode"));
+        eircodeRoutingKey.setCellValueFactory(new PropertyValueFactory<Record, String>("eircodeRoutingKey"));
+        year.setCellValueFactory(new PropertyValueFactory<Record, Integer>("year"));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setItems(obslist);
+        bp.setCenter(table);
         return new Scene(bp);
     }
 
@@ -949,21 +1071,50 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    public Scene makeYearlyBalancingStatementScene(Stage primaryStage, String year) {
+    public Scene makeYearlyBalancingStatementScene(Stage primaryStage) {
         Button btnBack = new Button("Back");
-        String titleText = "Balancing Statement for " + year;
+        String titleText = "Balancing Statement for " + currentOwner.getName() + " (Unpaid records)";
+
         BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Date", "Description", "Paid", "Balance");
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
             primaryStage.setScene(scnDash);
         });
-        return new Scene(bp);
-    }
+        ArrayList<Record> paidRecords = new ArrayList<Record>();
+        ArrayList<String> eircodes = sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum());
+        for (String eircode : eircodes) {
+            ArrayList<Record> recordsTemp = sm.getPaymentRecords(eircode);
+            for (Record r : recordsTemp) {
+                if (r.getPaymentStatus().equalsIgnoreCase("unpaid")) {
+                    paidRecords.add(r);
+                }
+            }
+        }
 
-    public Scene makePropBalancingStatementScene(Stage primaryStage, String eircode) {
-        Button btnBack = new Button("Back");
-        String titleText = "Balancing Statement for " + eircode;
-        BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Date", "Description", "Paid", "Balance");
+        TableView<Record> table = new TableView<>();
+
+        TableColumn<Record, String> eircode = new TableColumn<>("Eircode");
+        TableColumn<Record, String> eircodeRoutingKey = new TableColumn<>("Eircode Routing Key");
+        TableColumn<Record, Integer> year = new TableColumn<>("Year");
+
+        eircode.setSortable(false);
+        eircodeRoutingKey.setSortable(false);
+        year.setSortable(false);
+
+        table.getColumns().add(eircode);
+        table.getColumns().add(eircodeRoutingKey);
+        table.getColumns().add(year);
+        ObservableList<Record> obslist = FXCollections.observableArrayList();
+        for (Record p : paidRecords) {
+            obslist.add(p);
+
+        }
+        eircode.setCellValueFactory(new PropertyValueFactory<Record, String>("eircode"));
+        eircodeRoutingKey.setCellValueFactory(new PropertyValueFactory<Record, String>("eircodeRoutingKey"));
+        year.setCellValueFactory(new PropertyValueFactory<Record, Integer>("year"));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setItems(obslist);
+        bp.setCenter(table);
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
             primaryStage.setScene(scnDash);
