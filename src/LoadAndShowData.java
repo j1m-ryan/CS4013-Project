@@ -17,8 +17,10 @@ public class LoadAndShowData {
         ArrayList<String> ownersData = reader.readLinesFromFile("data/registeredOwners.csv");
         ArrayList<String> ownerPropertylinksData = reader.readLinesFromFile("data/ownerPropertylinks.csv");
         ArrayList<String> recordsData = reader.readLinesFromFile("data/registeredPaymentRecords.csv");
+        ArrayList<String> employeesData = reader.readLinesFromFile("data/registeredEmployees.csv");
         // load system with already registered  data
-        system.loadAllRegisteredData(propertiesData, ownersData, ownerPropertylinksData, recordsData, eircodes);
+        system.loadAllRegisteredData(propertiesData, ownersData, ownerPropertylinksData, recordsData, 
+                                    eircodes,employeesData);
         
         
         int year = 2020;
@@ -73,7 +75,7 @@ public class LoadAndShowData {
         System.out.println("\n\n************************************\n\n");
 
         System.out.println("\nGarry makes a payment for his property eircode V14A221");
-        system.makePayment(2018, "V14A221", 100.0);                
+        system.makePayment(2018, "V14A221");                
 
         System.out.println("\nget payment data of Property eircode V14A221");
         paymentData = system.getPaymentRecords("V14A221");
