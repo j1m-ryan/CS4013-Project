@@ -130,6 +130,7 @@ public class SystemManager  {
     private void linkPropertyToOwners(ArrayList<String> owners_ppsNums, String eircode){
         for(String ppsNum : owners_ppsNums){
             owners.get(ppsNum).addProperty(eircode);
+            registeredProperties.get(eircode).addOwnersPps(ppsNum);
         }
     }
 
@@ -140,6 +141,7 @@ public class SystemManager  {
         registeredProperties.put(eircode, new Property(address, eircode, 
                                  estimatedMarketValue,  locationCategory, isPrincipalPrivateResidence));
         linkPropertyToOwners(getOwnersAsArrayList(owners_ppsNums), eircode);
+        registeredProperties.get(eircode).addOwnersPps(getOwnersAsArrayList(owners_ppsNums));
         double taxDue = calculateTax(eircode);
         
         registerPaymentsRecord(eircode, taxDue, "unpaid", year);
@@ -217,6 +219,11 @@ public class SystemManager  {
     public Property getPropertyData(String eircode){
         return registeredProperties.get(eircode);
     }
+
+    // method to get property owners
+    public ArrayList<String> getPropertyOwners(String eircode){
+        return registeredProperties.get(eircode).getOwnersPps();
+    }
         
     // method to get property payments records for all registered years
     public ArrayList<Record> getPaymentRecords(String eircode){
@@ -269,7 +276,7 @@ public class SystemManager  {
     private int totalNumOfProperties(String eircodeRoutingKey){
         int count = 0;
         for(String k : registeredProperties.keySet()){
-            if(registeredProperties.get(k).getEircodeRoutingKey().equalsIgnoreCase(eircode)){
+            if(registeredProperties.get(k).getEircodeRoutingKey().equalsIgnoreCase(eircodeRoutingKey)){
                 count++;
             }
         }

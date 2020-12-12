@@ -75,9 +75,15 @@ public class Property {
     public ArrayList<String> getOwnersPps() {
         return ownersPPS;
     }
-	//Setter for Owner PPS from the Arraylist
-    public void setOwnersPps(ArrayList<String> ids) {
-        ownersPPS = ids;
+    
+    //method to add single Owner PPS number a time 
+    public void addOwnersPps(String ppsNum) {
+        ownersPPS.add(ppsNum);
+    }
+    
+    //method to add Owners PPS numbers from the Arraylist
+    public void addOwnersPps(ArrayList<String> ppsNums) {
+        ownersPPS = ppsNums;
     }
 
 }
