@@ -482,7 +482,7 @@ public class App extends Application {
 
         double total = sm.totalTaxDue(currentOwner.getPpsNum());
 
-        String displayTotal = Double.toString(total);
+        String displayTotal = Double.toString(Math.round(total));
         Label lblTotalTax = new Label("Total Tax Due:");
         btnGrid.add(lblTotalTax, 0, 3);
         Text txtTotalTax = new Text();
