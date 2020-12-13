@@ -24,18 +24,41 @@ public class SystemManager {
         // do nothing for now but later will do something like run() method
     }
 
+    
+    /** 
+     * @param codes
+     */
     public void setEircodeToLocation(HashMap<String, String> codes) {
         this.eircodeToLocation = codes;
     }
 
+    
+    /** 
+     * @param eircode
+     * @param county
+     */
     private void addEircodeToLocation(String eircode, String county) {
         eircodeToLocation.put(eircode, county);
     }
 
+    
+    /** 
+     * @param codes
+     */
     public void setLocationToEircode(HashMap<String, String> codes) {
         this.eircodeToLocation = codes;
     }
 
+    
+    /** 
+     * @param propertiesData
+     * @param ownersData
+     * @param ownerPropertylinks
+     * @param paymentRecords
+     * @param eircodesAndCounties
+     * @param empolyeesData
+     * @param preBuiltTaxTable
+     */
     // method to load all database of registered owerns, properties and records at
     // startup
     public void loadAllRegisteredData(ArrayList<String> propertiesData, ArrayList<String> ownersData,
@@ -77,6 +100,11 @@ public class SystemManager {
         loadTaxTableData(preBuiltTaxTable);
     }
 
+    
+    /** 
+     * @param line
+     * @return ArrayList<String>
+     */
     // methods to update all database of registered owerns, properties and records
 
     // helper method to separate each word in line and send back separated words as
@@ -90,6 +118,10 @@ public class SystemManager {
         return separatedWords;
     }
 
+    
+    /** 
+     * @param recordData
+     */
     // helper method to load payments records to systam at start up
     private void loadPaymentRecords(ArrayList<String> recordData) {
         String eircode = recordData.get(0);
@@ -99,6 +131,10 @@ public class SystemManager {
         registerPaymentsRecord(eircode, taxDue, paymentStatus, year);
     }
 
+    
+    /** 
+     * @param relationData
+     */
     // helper method to link loaded properties to owerns at start up
     private void linkPropertiesToOwners(ArrayList<String> relationData) {
         String eircode = relationData.get(0);
@@ -113,6 +149,10 @@ public class SystemManager {
         linkPropertyToOwners(tempOwners, eircode);
     }
 
+    
+    /** 
+     * @param propDetails
+     */
     // helper method to load registered properties at start up
     private void loadRegisteredProps(ArrayList<String> propDetails) {
         boolean isPrincipalPrivateResidence = false;
@@ -125,6 +165,10 @@ public class SystemManager {
                 propDetails.get(2), propDetails.get(3), isPrincipalPrivateResidence));
     }
 
+    
+    /** 
+     * @param taxTableData
+     */
     // method to set tax table
     private void loadTaxTableData(ArrayList<String> taxTableData) {
         double fixedCost = 0;
@@ -182,21 +226,43 @@ public class SystemManager {
                 valueRangeMaxs);
     }
 
+    
+    /** 
+     * @param name
+     * @param workId
+     * @param password
+     */
     // method to register department employee
     public void registerEmployee(String name, String workId, String password) {
         employees.put(workId, (new Employee(name, workId, password)));
     }
 
+    
+    /** 
+     * @param name
+     * @param ppsNum
+     * @param password
+     */
     // method to register owner
     public void registerOwner(String name, String ppsNum, String password) {
         owners.put(ppsNum, (new Owner(name, ppsNum, password)));
     }
 
+    
+    /** 
+     * @param owner_ppsNum
+     * @return ArrayList<String>
+     */
     // method to get properties ids linked to owner
     public ArrayList<String> getOwnerPropertiesEircodes(String owner_ppsNum) {
         return owners.get(owner_ppsNum).getPropertiesEircodes();
     }
 
+    
+    /** 
+     * @param owners_ppsNums
+     * @param eircode
+     */
     // method to link property to owners
     private void linkPropertyToOwners(ArrayList<String> owners_ppsNums, String eircode) {
         for (String ppsNum : owners_ppsNums) {
@@ -205,6 +271,16 @@ public class SystemManager {
         }
     }
 
+    
+    /** 
+     * @param year
+     * @param owners_ppsNums
+     * @param address
+     * @param eircode
+     * @param estimatedMarketValue
+     * @param locationCategory
+     * @param isPrincipalPrivateResidence
+     */
     // method to register new property
     public void registerProperty(int year, String owners_ppsNums, String address, String eircode,
             String estimatedMarketValue, String locationCategory, boolean isPrincipalPrivateResidence) {
@@ -217,6 +293,11 @@ public class SystemManager {
         registerPaymentsRecord(eircode, taxDue, "unpaid", year);
     }
 
+    
+    /** 
+     * @param owners_ppsNums
+     * @return ArrayList<String>
+     */
     // method to return owners pps in array
     private ArrayList<String> getOwnersAsArrayList(String owners_ppsNums) {
         ArrayList<String> ppsNumsArray = new ArrayList<String>();
@@ -227,6 +308,13 @@ public class SystemManager {
         return ppsNumsArray;
     }
 
+    
+    /** 
+     * @param eircode
+     * @param taxDue
+     * @param paymentStatus
+     * @param year
+     */
     // method to register payment records
     public void registerPaymentsRecord(String eircode, double taxDue, String paymentStatus, int year) {
         ArrayList<Record> temp = new ArrayList<Record>();
@@ -240,6 +328,11 @@ public class SystemManager {
         }
     }
 
+    
+    /** 
+     * @param eircode
+     * @return double
+     */
     // method to calcuclate property tax
     public double calculateTax(String eircode) {
         double totalCharges = 0;
@@ -278,11 +371,21 @@ public class SystemManager {
         return totalCharges;
     }
 
+    
+    /** 
+     * @param year
+     * @return ArrayList<Record>
+     */
     // method to get all over due properties for specified year
     public ArrayList<Record> getOverDuePropsPerYear(int year) {
         return getDataFromPaymentRecords(year, "unpaid");
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @return ArrayList<Record>
+     */
     // method to return owners all properties paid records
     public ArrayList<Record> getOwnersPaidPropsRecords(String ppsNum) {
         Owner owner = owners.get(ppsNum);
@@ -294,6 +397,11 @@ public class SystemManager {
         return paidRecords;
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @return ArrayList<Record>
+     */
     // method to return owners all properties due records
     public ArrayList<Record> getOwnersDuePropsRecords(String ppsNum) {
         Owner owner = owners.get(ppsNum);
@@ -305,6 +413,12 @@ public class SystemManager {
         return dueRecords;
     }
 
+    
+    /** 
+     * @param eircode
+     * @param paymentStatus
+     * @return ArrayList<Record>
+     */
     // method to get all paid or unpaid records for chosen
     public ArrayList<Record> getPropertyRecords(String eircode, String paymentStatus) {
         ArrayList<Record> allRecords = getPaymentRecords(eircode);
@@ -317,6 +431,11 @@ public class SystemManager {
         return matchingRecords;
     }
 
+    
+    /** 
+     * @param eircodeRoutingKey
+     * @return ArrayList<Record>
+     */
     // Overloaded with Eircode
     // method to get all over due properties for speicified eircode routing key
     public ArrayList<Record> getAllOverDueProps(String eircodeRoutingKey) {
@@ -329,6 +448,12 @@ public class SystemManager {
           // not found in eircodeToLocation
     }
 
+    
+    /** 
+     * @param year
+     * @param paymentStatus
+     * @return ArrayList<Record>
+     */
     // helper method to get records from payment records with specified year and
     // payment status
     private ArrayList<Record> getDataFromPaymentRecords(int year, String paymentStatus) {
@@ -347,6 +472,12 @@ public class SystemManager {
         return matchingRecs;
     }
 
+    
+    /** 
+     * @param eircodeRoutingkey
+     * @param paymentStatus
+     * @return ArrayList<Record>
+     */
     // method to get payment records of matching routing key area for all years for
     // specified paymentStatus
     public ArrayList<Record> getAreaPaymentRecords(String eircodeRoutingkey, String paymentStatus) {
@@ -363,16 +494,31 @@ public class SystemManager {
         return matchingRecs;
     }
 
+    
+    /** 
+     * @param eircode
+     * @return Property
+     */
     // method to get property data ie. address, eircode, location etc.
     public Property getPropertyData(String eircode) {
         return registeredProperties.get(eircode);
     }
 
+    
+    /** 
+     * @param eircode
+     * @return ArrayList<String>
+     */
     // method to get property owners
     public ArrayList<String> getPropertyOwners(String eircode) {
         return registeredProperties.get(eircode).getOwnersPps();
     }
 
+    
+    /** 
+     * @param eircode
+     * @return ArrayList<Record>
+     */
     // method to get property payments records for all registered years
     public ArrayList<Record> getPaymentRecords(String eircode) {
         ArrayList<Record> combinedRecs = new ArrayList<Record>();
@@ -382,6 +528,12 @@ public class SystemManager {
         return combinedRecs;
     }
 
+    
+    /** 
+     * @param year
+     * @param eircode
+     * @return ArrayList<Record>
+     */
     // method returns all payments records of desired property for specified year
     public ArrayList<Record> getPaymentRecords(int year, String eircode) {
         ArrayList<Record> matchingRecs = new ArrayList<Record>();
@@ -396,6 +548,11 @@ public class SystemManager {
         return matchingRecs;
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @return ArrayList<Record>
+     */
     // method to get records of owner's all properties records
     public ArrayList<Record> getOwnerAllRecords(String ppsNum) {
         ArrayList<String> eircodes = getOwnerPropertiesEircodes(ppsNum);
@@ -406,6 +563,10 @@ public class SystemManager {
         return matchingRecs;
     }
 
+    
+    /** 
+     * @return ArrayList<Integer>
+     */
     // method to send arraylist of all years for which system has records
     public ArrayList<Integer> getRecordsYears() {
         ArrayList<Integer> years = new ArrayList<Integer>();
@@ -415,6 +576,12 @@ public class SystemManager {
         return years;
     }
 
+    
+    /** 
+     * @param year
+     * @param eircode
+     * @return boolean
+     */
     // method to pay the tax for specified year of a property
     public boolean makePayment(int year, String eircode) {
         ArrayList<Record> temp = new ArrayList<Record>();
@@ -426,6 +593,11 @@ public class SystemManager {
         return false;
     }
 
+    
+    /** 
+     * @param eircodeRoutingKey
+     * @return double[]
+     */
     // method to display tax stats for a specified eircodeRoutingKey
     // returned is an array of {totalTaxPaid, avgTaxPaid, numOfTaxPaidProperties,
     // percentageOfPropTaxPaid}
@@ -447,6 +619,11 @@ public class SystemManager {
         return allCombined;
     }
 
+    
+    /** 
+     * @param eircodeRoutingKey
+     * @return int
+     */
     // method for counting number of registered properties for a specified
     // eircodeRoutingKey
     private int totalNumOfProperties(String eircodeRoutingKey) {
@@ -459,6 +636,11 @@ public class SystemManager {
         return count;
     }
 
+    
+    /** 
+     * @param eircodeRoutingKey
+     * @return double
+     */
     // method to get total tax paid by all properties in specified eircodeRoutingKey
     private double totalTaxPaid(String eircodeRoutingKey) {
         ArrayList<Record> taxPaidProps = getAreaPaymentRecords(eircodeRoutingKey, "paid");
@@ -469,6 +651,12 @@ public class SystemManager {
         return sum;
     }
 
+    
+    /** 
+     * @param allRecords
+     * @param eircodeRoutingKey
+     * @return ArrayList<Record>
+     */
     // method to filter records with specified eircodeRoutingKey
     private ArrayList<Record> getMatchingEircoderecords(ArrayList<Record> allRecords, String eircodeRoutingKey) {
         if (eircodeToLocation.containsKey(eircodeRoutingKey)) {
@@ -485,6 +673,11 @@ public class SystemManager {
           // not found in eircodeToLocation
     }
 
+    
+    /** 
+     * @param ppsNums
+     * @return boolean
+     */
     public boolean areAllAdditionalOwnersRegestered(String ppsNums) {
         StringTokenizer separatedPpsNums = new StringTokenizer(ppsNums, " ,");
         while (separatedPpsNums.hasMoreTokens()) {
@@ -495,6 +688,11 @@ public class SystemManager {
         return true;
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @return boolean
+     */
     // method to check if owner with matching pps number exists in database
     public boolean ownerExists(String ppsNum) {
         if (owners.containsKey(ppsNum)) {
@@ -503,6 +701,11 @@ public class SystemManager {
         return false;
     }
 
+    
+    /** 
+     * @param workId
+     * @return boolean
+     */
     // method to check if owner with matching pps number exists in database
     public boolean employeeExists(String workId) {
         if (employees.containsKey(workId)) {
@@ -511,6 +714,12 @@ public class SystemManager {
         return false;
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @param pass
+     * @return boolean
+     */
     // method to check if login details match the one's on database
     public boolean loginVerification(String ppsNum, String pass) {
         if (ownerExists(ppsNum)) {
@@ -522,6 +731,12 @@ public class SystemManager {
         return false;
     }
 
+    
+    /** 
+     * @param workId
+     * @param password
+     * @return boolean
+     */
     // method to check if login details match the one's on database for an employee
     public boolean depLoginVerification(String workId, String password) {
         if (employeeExists(workId)) {
@@ -533,32 +748,62 @@ public class SystemManager {
         return false;
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @return Owner
+     */
     // returns owner object if an owner with matching ppsNum is found
     public Owner getOwner(String ppsNum) {
         return owners.get(ppsNum);
         // will be throwing error if not found for later
     }
 
+    
+    /** 
+     * @param workId
+     * @return Employee
+     */
     // returns employee object if an employee with matching workId is found
     public Employee getEmployee(String workId) {
         return employees.get(workId);
         // will be throwing error if not found for later
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @return boolean
+     */
     // 7 digits and 1 or 2 letters
     public boolean isValidppsNum(String ppsNum) {
         return ppsNum.matches("[\\d]{7}[ A-Za-z]{1,2}");
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @return boolean
+     */
     // 8 digits
     public boolean isValidWID(String ppsNum) {
         return ppsNum.matches("[\\d]{8}");
     }
 
+    
+    /** 
+     * @param password
+     * @return boolean
+     */
     public boolean isValidPassword(String password) {
         return password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$");
     }
 
+    
+    /** 
+     * @param str
+     * @return boolean
+     */
     public boolean isDouble(String str) {
         try {
             Double.parseDouble(str);
@@ -568,6 +813,11 @@ public class SystemManager {
         }
     }
 
+    
+    /** 
+     * @param eircode
+     * @return boolean
+     */
     // check if an eircode contains the routing key, is 7 chars long and is made of
     // letters and numbers only
     public boolean isValidEircode(String eircode) {
@@ -578,6 +828,11 @@ public class SystemManager {
         return eircode.matches("[a-zA-Z0-9]{7}");
     }
 
+    
+    /** 
+     * @param key
+     * @return boolean
+     */
     // method to check if an key is a valid eircode routing key
     public boolean isValidEircodeRouteKey(String key) {
         if (eircodeToLocation.containsKey(key)) {
@@ -586,11 +841,21 @@ public class SystemManager {
         return false;
     }
 
+    
+    /** 
+     * @param key
+     * @return String
+     */
     // method to return county name of making eircode routing key
     public String routeKeyLocation(String key) {
         return eircodeToLocation.get(key);
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @return double
+     */
     public double totalTaxDue(String ppsNum) {
         ArrayList<Record> allDueRecords = getOwnersDuePropsRecords(ppsNum);
         double sum = 0;
@@ -600,6 +865,11 @@ public class SystemManager {
         return sum;
     }
 
+    
+    /** 
+     * @param ppsNum
+     * @return Set<Integer>
+     */
     // method to get years for which all properties of owner are due tax
     public Set<Integer> getOwnerYearsUnpaidAllProps(String ppsNum) {
         ArrayList<Record> allDueRecords = getOwnersDuePropsRecords(ppsNum);
@@ -611,6 +881,12 @@ public class SystemManager {
         return uniqueYears;
     }
 
+    
+    /** 
+     * @param year
+     * @param eircodeRoutingKey
+     * @return ArrayList<Record>
+     */
     public ArrayList<Record> getAllOverDueProps(int year, String eircodeRoutingKey) {
         if (eircodeToLocation.containsKey(eircodeRoutingKey)) {
             ArrayList<Record> allDueProps = getDataFromPaymentRecords(year, "unpaid");
@@ -627,6 +903,11 @@ public class SystemManager {
           // not found in eircodeToLocation
     }
 
+    
+    /** 
+     * @param eircode
+     * @return Set<Integer>
+     */
     // method to get years for which the property is due tax
     public Set<Integer> getPropertyYearsUnpaid(String eircode) {
         ArrayList<Integer> years = new ArrayList<Integer>();
@@ -644,6 +925,10 @@ public class SystemManager {
         return uniqueYears;
     }
 
+    
+    /** 
+     * @return Set<Integer>
+     */
     public Set<Integer> getYearsUnpaidDepartment() {
         ArrayList<Integer> years = new ArrayList<Integer>();
         ArrayList<Record> recs = new ArrayList<Record>();

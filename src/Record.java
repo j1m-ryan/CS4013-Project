@@ -17,26 +17,50 @@ public class Record {
         this.year = year;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getEircode(){
         return this.eircode;
     }
 
+    
+    /** 
+     * @return double
+     */
     public double getTaxAmount(){
         return this.taxAmount;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getPaymentStatus(){
         return this.status;
     }
 
+    
+    /** 
+     * @return int
+     */
     public int getYear(){
         return this.year;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getEircodeRoutingKey(){
         return this.eircodeRoutingKey;
     }
 
+    
+    /** 
+     * @param newStatus
+     */
     public void setPaymentStatus(String newStatus){
         this.status = newStatus;
     }

@@ -9,31 +9,55 @@ public class Employee {
         setWorkId(workId);
         setPassword(password);
     }
-	//method to set name 
+	
+    /** 
+     * @param name
+     */
+    //method to set name 
     public void setName(String name) {
         this.name = name;
     }
 
-	//method to set work id 
+	
+    /** 
+     * @param workId
+     */
+    //method to set work id 
     public void setWorkId(String workId) {
         this.workId = workId;
     }
 
-	//method to set password (no return type)
+	
+    /** 
+     * @param password
+     */
+    //method to set password (no return type)
     public void setPassword(String password) {
         this.password = password;
     }
 
-	//method to return name
+	
+    /** 
+     * @return String
+     */
+    //method to return name
     public String getName() {
         return name;
     }
     
+    
+    /** 
+     * @return String
+     */
     //method to get work id 
     public String getWorkId() {
         return workId;
     }
     
+    
+    /** 
+     * @return String
+     */
     //Show password
     public String getPassword() {
         return password;

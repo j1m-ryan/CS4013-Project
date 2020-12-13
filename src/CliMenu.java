@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,14 +10,32 @@ import java.util.Scanner;
 public class CliMenu {
     private Scanner in;
     private SystemManager sm = new SystemManager();
-    private Owner owner;
-    private Employee employee;
+    Owner owner;
+    Employee employee;
+    private CSVReader reader = new CSVReader();
 
     public CliMenu() {
         in = new Scanner(System.in);
     }
 
-    public void run() {
+    
+    /** 
+     * @throws IOException
+     */
+    public void run() throws IOException {
+
+        sm = new SystemManager();
+        reader = new CSVReader();
+        ArrayList<String> eircodes = reader.readLinesFromFile("data/eircodesAndCounties.csv");
+        ArrayList<String> propertiesData = reader.readLinesFromFile("data/registeredProperties.csv");
+        ArrayList<String> ownersData = reader.readLinesFromFile("data/registeredOwners.csv");
+        ArrayList<String> ownerPropertylinksData = reader.readLinesFromFile("data/ownerPropertylinks.csv");
+        ArrayList<String> recordsData = reader.readLinesFromFile("data/registeredPaymentRecords.csv");
+        ArrayList<String> employeesData = reader.readLinesFromFile("data/registeredEmployees.csv");
+        ArrayList<String> preBuiltTaxTable = reader.readLinesFromFile("data/preBuiltTaxTable.csv");
+        // load system with already registered data
+        sm.loadAllRegisteredData(propertiesData, ownersData, ownerPropertylinksData, recordsData, eircodes,
+                employeesData, preBuiltTaxTable);
         boolean more = true;
 
         while (more) {
@@ -41,7 +62,11 @@ public class CliMenu {
                 "Our software company Tax Ireland Solutions Ltd under contract from \nthe Department of Environment has developed this Property Charge Management System. \nThe system will allow property owners to register each of their properties and to pay the \nproperty tax due for the properties. Property tax is a yearly tax on a property and it is due to be \npaid on Jan 1st each year. Property owners are able to view a list of their properties \nand the tax that is due currently per property and also any overdue tax \n(hasn't been paid for a previous year) and are able to query specific previous years and get a balancing statement \nfor any particular year or property. The system maintains a record of all payments of the \nproperty charge on a yearly basis.");
     }
 
-    public void login() {
+    
+    /** 
+     * @throws IOException
+     */
+    public void login() throws IOException {
         System.out.println("Login Menu");
         System.out.println("Enter your PPS number: ");
         String pps = in.nextLine().trim().toUpperCase();
@@ -67,6 +92,8 @@ public class CliMenu {
             }
             password = in.nextLine();
         }
+        owner = sm.getOwner(pps);
+
         dash();
     }
 
@@ -96,7 +123,6 @@ public class CliMenu {
 
     public void dash() {
         boolean more = true;
-
         while (more) {
             System.out.println("Welcome to your dashboard " + owner.getName());
             System.out.println(
@@ -306,8 +332,12 @@ public class CliMenu {
         }
     }
 
+    
+    /** 
+     * @throws IOException
+     */
     // Department Side
-    public void depLogin() {
+    public void depLogin() throws IOException {
         System.out.println("Department Login Menu");
         System.out.println("Enter your Worker ID: ");
         String wid = in.nextLine().trim().toUpperCase();
@@ -334,6 +364,8 @@ public class CliMenu {
             }
             password = in.nextLine();
         }
+        employee = sm.getEmployee(wid);
+
         depDash();
     }
 
@@ -386,9 +418,7 @@ public class CliMenu {
         ArrayList<Record> unpaidRecords = new ArrayList<Record>();
         System.out.println("Please enter an Eircode Prefix e.g. V42");
         String eirRoutingKey = in.nextLine().trim();
-        System.out.println("Please enter a year.");
-        int year = in.nextInt();
-        ArrayList<Record> overdueProperties = sm.getAllOverDueProps(year, eirRoutingKey);
+        ArrayList<Record> overdueProperties = sm.getAllOverDueProps(eirRoutingKey);
         for (Record r : overdueProperties) {
             if (!r.getPaymentStatus().equalsIgnoreCase("paid")) {
                 unpaidRecords.add(r);
@@ -410,10 +440,22 @@ public class CliMenu {
 
     public void PropTaxStats() {
         System.out.println("Property Tax Statistics By Area");
+        System.out.println("Please enter the Eircode Routing Key of the area you wish to view the statistics of:");
+        String eirRoutingKey = in.nextLine().trim();
+        double[] taxStats = sm.getTaxStats(eirRoutingKey);
+        NumberFormat nf = new DecimalFormat("0.#");
+        System.out.println(taxStats);
+        for (double stats : taxStats) {
+            System.out.println(nf.format(stats));
+        }
     }
 
     public void ViewPropTaxData() {
         System.out.println("Property Tax Payment Data");
+        System.out.println("Please enter Eircode Routing key");
+        String eircodeRoutKey = in.nextLine().trim();
+        double[] taxStats = sm.getTaxStats(eircodeRoutKey);
+
     }
 
 }

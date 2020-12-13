@@ -11,6 +11,12 @@ public class CSVReader{
         // do nothing
     }
     
+    
+    /** 
+     * @param fileLocation
+     * @return ArrayList<String>
+     * @throws IOException
+     */
     // reading program to read the csv files lines ie helper program
     public ArrayList<String> readLinesFromFile(String fileLocation) throws IOException{
                 

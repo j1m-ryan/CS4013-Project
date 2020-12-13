@@ -40,6 +40,10 @@ public class App extends Application {
     Owner currentOwner;
     Employee currentEmployee;
 
+    
+    /** 
+     * @param args[]
+     */
     public static void main(String args[]) {
 
         // read from CSV files
@@ -47,6 +51,11 @@ public class App extends Application {
         launch(args);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         sm = new SystemManager();
@@ -72,6 +81,12 @@ public class App extends Application {
         primaryStage.setMinHeight(500);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     * @throws FileNotFoundException
+     */
     public Scene makeWelcomeScene(Stage primaryStage) throws FileNotFoundException {
         Button btnAbout = new Button("About");
         Button btnLogin = new Button("Login");
@@ -103,6 +118,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeAboutScene(Stage primaryStage) {
         Button btnBack = new Button("Back");
         BorderPane bp = makeNewBorderPaneWithBtnBar("About", btnBack);
@@ -117,6 +137,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeLoginScene(Stage primaryStage) {
         Button btnBack = new Button("Back");
         Button btnSignUp = new Button("Sign Up");
@@ -175,6 +200,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeSignUpScene(Stage primaryStage) {
         Button btnBack = new Button("Cancel");
         Button btnSignUp = new Button("Sign Up");
@@ -236,6 +266,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeDepLoginScene(Stage primaryStage) {
         Button btnBack = new Button("Back");
         Button btnLogin = new Button("Login");
@@ -286,6 +321,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeDepSignUpScene(Stage primaryStage) {
         Button btnBack = new Button("Cancel");
         Button btnSignUp = new Button("Sign Up");
@@ -347,6 +387,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeDashScene(Stage primaryStage) {
         Button btnBack = new Button("Logout");
         BorderPane bp = makeNewBorderPaneWithBtnBar("Owner Dashboard", btnBack);
@@ -436,6 +481,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeDepDashScene(Stage primaryStage) {
         Button btnBack = new Button("Logout");
         BorderPane bp = makeNewBorderPaneWithBtnBar("Department Dashboard", btnBack);
@@ -491,6 +541,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeRegPropScene(Stage primaryStage) {
         Button btnBack = new Button("Cancel");
         Button btnConfirm = new Button("Confirm");
@@ -608,6 +663,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makePayTaxScene(Stage primaryStage) {
         Button btnBack = new Button("Cancel");
         Button btnPay = new Button("Pay");
@@ -671,6 +731,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeViewPropScene(Stage primaryStage) {
         Button btnBack = new Button("Back");
         Button btnConfirm = new Button("Confirm");
@@ -746,6 +811,12 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @param eircode
+     * @return Scene
+     */
     private Scene makePropScene(Stage primaryStage, String eircode) {
         Property p = sm.getPropertyData(eircode);
         Button btnBack = new Button("Back");
@@ -819,6 +890,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makePrevPayments(Stage primaryStage) {
         Button btnBack = new Button("Back");
         BorderPane bp = makeBorderPaneWithBtnBarAndTable("Previous Payments (Paid Records)", btnBack, "Eircode",
@@ -866,6 +942,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeOverdueProp(Stage primaryStage) {
         Button btnBack = new Button("Back");
         Button btnConfirm = new Button("Confirm");
@@ -936,6 +1017,12 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @param yearIn
+     * @return Scene
+     */
     public Scene makeOverduePropTableScene(Stage primaryStage, String yearIn) {
         Button btnBack = new Button("Back");
         String titleText = "View all overdue properties in " + yearIn;
@@ -975,6 +1062,13 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @param yearIn
+     * @param eircodeprefIn
+     * @return Scene
+     */
     public Scene makeOverduePropTableScene(Stage primaryStage, String yearIn, String eircodeprefIn) {
         Button btnBack = new Button("Back");
         String eircodeLocation = sm.routeKeyLocation(eircodeprefIn);
@@ -1015,6 +1109,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makePropTaxStat(Stage primaryStage) {
         Button btnBack = new Button("Back");
         Button btnConfirm = new Button("Confirm");
@@ -1069,6 +1168,12 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @param eircodeRoutKey
+     * @return Scene
+     */
     private Scene makePropTaxStatView(Stage primaryStage, String eircodeRoutKey) {
         double[] taxStats = sm.getTaxStats(eircodeRoutKey);
         Button btnBack = new Button("Back");
@@ -1116,6 +1221,12 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @param eircodeIn
+     * @return Scene
+     */
     public Scene makeViewPropPaymentTableByEircodeScene(Stage primaryStage, String eircodeIn) {
         Button btnBack = new Button("Back");
         String titleText = "View all properties payment data for " + eircodeIn;
@@ -1154,6 +1265,12 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @param ppsn
+     * @return Scene
+     */
     public Scene makeViewPropPaymentTableByPPSNScene(Stage primaryStage, String ppsn) {
         Button btnBack = new Button("Back");
         String titleText = "View all properties payment data for " + ppsn;
@@ -1199,6 +1316,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makePayData(Stage primaryStage) {
         Button btnBack = new Button("Back");
         Button btnConfirmEircode = new Button("Confirm Eircode");
@@ -1280,6 +1402,12 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @param year
+     * @return Scene
+     */
     public Scene makeViewPropScene(Stage primaryStage, String year) {
         Button btnBack = new Button("Back");
         String titleText = "My Properties as of " + year;
@@ -1293,6 +1421,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param primaryStage
+     * @return Scene
+     */
     public Scene makeYearlyBalancingStatementScene(Stage primaryStage) {
         Button btnBack = new Button("Back");
         String titleText = "Balancing Statement for " + currentOwner.getName() + " (Unpaid records)";
@@ -1346,6 +1479,12 @@ public class App extends Application {
         return new Scene(bp);
     }
 
+    
+    /** 
+     * @param title
+     * @param btns
+     * @return BorderPane
+     */
     // Methods
     public BorderPane makeNewBorderPaneWithBtnBar(String title, Button... btns) {
         BorderPane bp = new BorderPane();
@@ -1366,6 +1505,10 @@ public class App extends Application {
         return bp;
     }
 
+    
+    /** 
+     * @return GridPane
+     */
     public GridPane makeNewGridPane() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -1375,12 +1518,24 @@ public class App extends Application {
         return grid;
     }
 
+    
+    /** 
+     * @param title
+     * @param b
+     * @param tableColumnTitles
+     * @return BorderPane
+     */
     public BorderPane makeBorderPaneWithBtnBarAndTable(String title, Button b, String... tableColumnTitles) {
         BorderPane bp = makeNewBorderPaneWithBtnBar(title, b);
         bp.setCenter(makeTable(tableColumnTitles));
         return bp;
     }
 
+    
+    /** 
+     * @param tableColumnTitles
+     * @return TableView<String>
+     */
     public TableView<String> makeTable(String... tableColumnTitles) {
         TableView<String> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -1394,6 +1549,13 @@ public class App extends Application {
         return tableView;
     }
 
+    
+    /** 
+     * @param alert
+     * @param alertTitle
+     * @param atype
+     * @return Alert
+     */
     public Alert makeAlert(String alert, String alertTitle, AlertType atype) {
         Alert a = new Alert(AlertType.NONE);
         a.setHeaderText(alert);
