@@ -1,0 +1,71 @@
+.button {
+  -fx-border-width: 1px;
+  -fx-background-insets: 0;
+  -fx-border-radius: 0px;
+  -fx-border-color: white;
+  -fx-background-color: rgb(58, 114, 218);
+  -fx-text-fill: white;
+}
+.button:hover {
+  -fx-background-insets: 0;
+  -fx-border-width: 1px;
+  -fx-border-radius: 0px;
+  -fx-border-color: rgb(58, 114, 218);
+  -fx-background-color: white;
+  -fx-text-fill: rgb(58, 114, 218);
+}
+.button:selected {
+  -fx-border-radius: 0px;
+  -fx-border-width: 1px;
+  -fx-border-color: rgb(58, 114, 218);
+  -fx-background-color: black;
+  -fx-text-fill: rgb(58, 114, 218);
+}
+
+.text-field {
+  -fx-font-family: "Quicksand";
+  -fx-font-size: 16;
+  -fx-padding: 1, 1, 1, 1;
+  -fx-border-color: rgba(57, 127, 219, 0.479);
+  -fx-border-width: 1;
+  -fx-border-radius: 0;
+  -fx-border: gone;
+  -fx-background-color: transparent;
+  -fx-text-fill: grey;
+}
+.check-box .box {
+  -fx-background-color: white;
+  -fx-border-color: rgba(57, 127, 219, 0.479);
+  -fx-border-radius: 0px;
+}
+
+.combo-box . {
+  -fx-background-color: transparent;
+  -fx-border-color: rgba(57, 127, 219, 0.479);
+  -fx-font-family: "Quicksand";
+  -fx-font-size: 16;
+  -fx-padding: 1, 1, 1, 1;
+  -fx-text-fill: grey;
+  -fx-border-radius: 0px;
+}
+.combo-box .arrow {
+  -fx-background-color: #2478e9;
+  -fx-text-fill: grey;
+  -fx-border-radius: 0px;
+}
+.combo-box .arrow-button {
+  -fx-background-color: transparent;
+  -fx-border-style: none;
+  -fx-text-fill: grey;
+  -fx-border-radius: 0px;
+}
+.combo-box .arrow-button {
+  -fx-background-color: transparent;
+  -fx-text-fill: grey;
+  -fx-border-radius: 0px;
+}
+.combo-box .list-cell {
+  -fx-background-color: transparent;
+  -fx-text-fill: grey;
+  -fx-border-radius: 0px;
+}

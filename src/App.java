@@ -49,6 +49,7 @@ public class App extends Application {
         primaryStage.setTitle("Property Management System");
         primaryStage.getIcons().add(new Image("file:house.png"));
         scnWelcome = makeWelcomeScene(primaryStage);
+        scnWelcome.getStylesheets().add("style.css");
         primaryStage.setScene(scnWelcome);
         primaryStage.show();
         primaryStage.setMinWidth(700);
@@ -69,10 +70,12 @@ public class App extends Application {
         imageView.setPreserveRatio(true);
         btnAbout.setOnAction(e -> {
             scnAbout = makeAboutScene(primaryStage);
+            scnAbout.getStylesheets().add("style.css");
             primaryStage.setScene(scnAbout);
         });
         btnLogin.setOnAction(e -> {
             scnLogin = makeLoginScene(primaryStage);
+            scnLogin.getStylesheets().add("style.css");
             primaryStage.setScene(scnLogin);
         });
         btnQuit.setOnAction(e -> System.exit(1));
@@ -138,16 +141,19 @@ public class App extends Application {
             currentOwner = sm.getOwner(userTextField.getText());
 
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
         btnSignUp.setOnAction(e ->
 
         {
             scnSignUp = makeSignUpScene(primaryStage);
+            scnSignUp.getStylesheets().add("style.css");
             primaryStage.setScene(scnSignUp);
         });
         btnDepLogin.setOnAction(e -> {
             scnDepLogin = makeDepLoginScene(primaryStage);
+            scnDepLogin.getStylesheets().add("style.css");
             primaryStage.setScene(scnDepLogin);
         });
         return new Scene(bp);
@@ -204,6 +210,7 @@ public class App extends Application {
                 a.show();
                 currentOwner = sm.getOwner(pps);
                 scnDash = makeDashScene(primaryStage);
+                scnDash.getStylesheets().add("style.css");
                 primaryStage.setScene(scnDash);
 
             }
@@ -249,11 +256,13 @@ public class App extends Application {
             currentEmployee = sm.getEmployee(userTextField.getText());
 
             scnDepDash = makeDepDashScene(primaryStage);
+            scnDepDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDepDash);
         });
 
         btnSignup.setOnAction(e -> {
             scnDepSignUp = makeDepSignUpScene(primaryStage);
+            scnDepSignUp.getStylesheets().add("style.css");
             primaryStage.setScene(scnDepSignUp);
 
         });
@@ -312,6 +321,7 @@ public class App extends Application {
                 a.show();
                 currentEmployee = sm.getEmployee(pps);
                 scnDepDash = makeDepDashScene(primaryStage);
+                scnDepDash.getStylesheets().add("style.css");
                 primaryStage.setScene(scnDepDash);
 
             }
@@ -369,24 +379,29 @@ public class App extends Application {
         btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
         btnRegProperty.setOnAction(e -> {
             scnRegProp = makeRegPropScene(primaryStage);
+            scnRegProp.getStylesheets().add("style.css");
             primaryStage.setScene(scnRegProp);
         });
         btnPayTax.setOnAction(e -> {
             scnPayTax = makePayTaxScene(primaryStage);
+            scnPayTax.getStylesheets().add("style.css");
             primaryStage.setScene(scnPayTax);
         });
         btnPrevPayment.setOnAction(e -> {
             scnPrevPayments = makePrevPayments(primaryStage);
+            scnPrevPayments.getStylesheets().add("style.css");
             primaryStage.setScene(scnPrevPayments);
         });
         btnConfirmYear.setOnAction(e -> {
 
             scnYearBalance = makeYearlyBalancingStatementScene(primaryStage);
+            scnYearBalance.getStylesheets().add("style.css");
             primaryStage.setScene(scnYearBalance);
         });
 
         btnViewProperty.setOnAction(e -> {
             scnViewProp = makeViewPropScene(primaryStage);
+            scnViewProp.getStylesheets().add("style.css");
             primaryStage.setScene(scnViewProp);
         });
 
@@ -443,14 +458,17 @@ public class App extends Application {
         btnBack.setOnAction(e -> primaryStage.setScene(scnWelcome));
         btnOverdueProp.setOnAction(e -> {
             scnOverdueProp = makeOverdueProp(primaryStage);
+            scnOverdueProp.getStylesheets().add("style.css");
             primaryStage.setScene(scnOverdueProp);
         });
         btnPropTaxStat.setOnAction(e -> {
             scnPropTaxStat = makePropTaxStat(primaryStage);
+            scnPropTaxStat.getStylesheets().add("style.css");
             primaryStage.setScene(scnPropTaxStat);
         });
         btnPayData.setOnAction(e -> {
             scnPayData = makePayData(primaryStage);
+            scnPayData.getStylesheets().add("style.css");
             primaryStage.setScene(scnPayData);
         });
         bp.setCenter(bpCENTER);
@@ -505,6 +523,7 @@ public class App extends Application {
         bp.setCenter(grid);
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
 
@@ -567,6 +586,7 @@ public class App extends Application {
                     estimatedMarketValue, locationCategory, isPrincipalPrivateResidence);
 
             scnViewProp = makeViewPropScene(primaryStage);
+            scnViewProp.getStylesheets().add("style.css");
             primaryStage.setScene(scnViewProp);
         });
 
@@ -578,6 +598,7 @@ public class App extends Application {
         Button btnPay = new Button("Pay");
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
 
@@ -611,6 +632,7 @@ public class App extends Application {
             }
             sm.makePayment(Calendar.getInstance().get(Calendar.YEAR), cBoxProperties.getValue());
             scnPrevPayments = makePrevPayments(primaryStage);
+            scnPrevPayments.getStylesheets().add("style.css");
             primaryStage.setScene(scnPrevPayments);
         });
         return new Scene(bp);
@@ -627,6 +649,7 @@ public class App extends Application {
                 "Value", "Tax Due");
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
         ArrayList<String> eircodes = sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum());
@@ -679,6 +702,7 @@ public class App extends Application {
                 return;
             }
             scnProp = makePropScene(primaryStage, cBoxEirCcde.getValue());
+            scnProp.getStylesheets().add("style.css");
             primaryStage.setScene(scnProp);
         });
 
@@ -695,10 +719,12 @@ public class App extends Application {
         Button btnBackProp = new Button("My Properties");
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
         btnBackProp.setOnAction(e -> {
             scnViewProp = makeViewPropScene(primaryStage);
+            scnViewProp.getStylesheets().add("style.css");
             primaryStage.setScene(scnViewProp);
         });
         ArrayList<String> ownersList = p.getOwnersPps();
@@ -753,6 +779,7 @@ public class App extends Application {
         bp.setCenter(grid);
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
 
@@ -800,6 +827,7 @@ public class App extends Application {
         bp.setCenter(table);
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
         return new Scene(bp);
@@ -811,6 +839,7 @@ public class App extends Application {
         BorderPane bp = makeNewBorderPaneWithBtnBar("Overdue Properties", btnBack);
         btnBack.setOnAction(e -> {
             scnDepDash = makeDepDashScene(primaryStage);
+            scnDepDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDepDash);
         });
         // Need to go back and check if prefix is valid using system manager
@@ -845,9 +874,11 @@ public class App extends Application {
                 return;
             } else if (userTextField.getText() == null || userTextField.getText().trim().isEmpty()) {
                 scnPropBalance = makeOverduePropTableScene(primaryStage, cBoxYear.getValue());
+                scnPropBalance.getStylesheets().add("style.css");
                 primaryStage.setScene(scnPropBalance);
             } else {
                 scnPropBalance = makeOverduePropTableScene(primaryStage, cBoxYear.getValue(), userTextField.getText());
+                scnPropBalance.getStylesheets().add("style.css");
                 primaryStage.setScene(scnPropBalance);
             }
             return;
@@ -865,7 +896,8 @@ public class App extends Application {
         BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Eircode", "Address", "Owners", "Value",
                 "Tax Due");
         btnBack.setOnAction(e -> {
-            scnDash = makeDashScene(primaryStage);
+            scnDepDash = makeDepDashScene(primaryStage);
+            scnDepDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDepDash);
         });
         ArrayList<Record> paidRecords = sm.getOverDuePropsPerYear(Integer.parseInt(yearIn));
@@ -897,17 +929,18 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    public Scene makeOverduePropTableScene(Stage primaryStage, String yearIn, String eircodeIn) {
+    public Scene makeOverduePropTableScene(Stage primaryStage, String yearIn, String eircodeprefIn) {
         Button btnBack = new Button("Back");
         String eircodeLocation = "DEFAULT MUST CHANGE";
         String titleText = "View all overdue properties in the year " + yearIn + " at " + eircodeLocation;
         BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Eircode", "Address", "Owners", "Value",
                 "Tax Due");
         btnBack.setOnAction(e -> {
-            scnDash = makeDashScene(primaryStage);
+            scnDepDash = makeDepDashScene(primaryStage);
+            scnDepDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDepDash);
         });
-        ArrayList<Record> paidRecords = sm.getAllOverDueProps(Integer.parseInt(yearIn), eircodeIn);
+        ArrayList<Record> paidRecords = sm.getAllOverDueProps(Integer.parseInt(yearIn), eircodeprefIn);
 
         TableView<Record> table = new TableView<>();
 
@@ -947,6 +980,7 @@ public class App extends Application {
          */
         btnBack.setOnAction(e -> {
             scnDepDash = makeDepDashScene(primaryStage);
+            scnDepDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDepDash);
         });
         Label lblWorkID = new Label("Work ID:");
@@ -973,14 +1007,41 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    public Scene makeViewPropPaymentTableByEircodeScene(Stage primaryStage, String eircode) {
+    public Scene makeViewPropPaymentTableByEircodeScene(Stage primaryStage, String eircodeIn) {
         Button btnBack = new Button("Back");
-        String titleText = "View all properties payment data for " + eircode;
+        String titleText = "View all properties payment data for " + eircodeIn;
         BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Date", "Paid", "Owners", "Value");
         btnBack.setOnAction(e -> {
             scnPayData = makePayData(primaryStage);
+            scnPayData.getStylesheets().add("style.css");
             primaryStage.setScene(scnPayData);
         });
+        ArrayList<Record> paidRecords = sm.getPaymentRecords(eircodeIn);
+
+        TableView<Record> table = new TableView<>();
+
+        TableColumn<Record, String> eircode = new TableColumn<>("Eircode");
+        TableColumn<Record, String> eircodeRoutingKey = new TableColumn<>("Eircode Routing Key");
+        TableColumn<Record, Integer> year = new TableColumn<>("Year");
+
+        eircode.setSortable(false);
+        eircodeRoutingKey.setSortable(false);
+        year.setSortable(false);
+
+        table.getColumns().add(eircode);
+        table.getColumns().add(eircodeRoutingKey);
+        table.getColumns().add(year);
+        ObservableList<Record> obslist = FXCollections.observableArrayList();
+        for (Record p : paidRecords) {
+            obslist.add(p);
+
+        }
+        eircode.setCellValueFactory(new PropertyValueFactory<Record, String>("eircode"));
+        eircodeRoutingKey.setCellValueFactory(new PropertyValueFactory<Record, String>("eircodeRoutingKey"));
+        year.setCellValueFactory(new PropertyValueFactory<Record, Integer>("year"));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setItems(obslist);
+        bp.setCenter(table);
         return new Scene(bp);
     }
 
@@ -991,6 +1052,7 @@ public class App extends Application {
                 "Value");
         btnBack.setOnAction(e -> {
             scnPayData = makePayData(primaryStage);
+            scnPayData.getStylesheets().add("style.css");
             primaryStage.setScene(scnPayData);
         });
         return new Scene(bp);
@@ -1012,9 +1074,10 @@ public class App extends Application {
 
         btnBack.setOnAction(e -> {
             scnDepDash = makeDepDashScene(primaryStage);
+            scnDepDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDepDash);
         });
-        Label lblWorkID = new Label("Work ID:");
+        Label lblWorkID = new Label("Work ID: " + currentEmployee.getWorkId());
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
         BorderPane bpTOP = new BorderPane();
@@ -1047,6 +1110,7 @@ public class App extends Application {
                 return;
             }
             scnPropPayment = makeViewPropPaymentTableByPPSNScene(primaryStage, ppsTextField.getText());
+            scnPropPayment.getStylesheets().add("style.css");
             primaryStage.setScene(scnPropPayment);
         });
         btnConfirmEircode.setOnAction(e -> {
@@ -1054,6 +1118,7 @@ public class App extends Application {
                 return;
             }
             scnPropPayment = makeViewPropPaymentTableByEircodeScene(primaryStage, eircodeTextField.getText());
+            scnPropPayment.getStylesheets().add("style.css");
             primaryStage.setScene(scnPropPayment);
         });
         return new Scene(bp);
@@ -1066,6 +1131,7 @@ public class App extends Application {
                 "Tax Due", "Tax Overdue", "Total Owed");
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
         return new Scene(bp);
@@ -1078,6 +1144,7 @@ public class App extends Application {
         BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Date", "Description", "Paid", "Balance");
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
         ArrayList<Record> paidRecords = new ArrayList<Record>();
@@ -1117,6 +1184,7 @@ public class App extends Application {
         bp.setCenter(table);
         btnBack.setOnAction(e -> {
             scnDash = makeDashScene(primaryStage);
+            scnDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDash);
         });
         return new Scene(bp);
@@ -1138,6 +1206,7 @@ public class App extends Application {
 
         bp.setTop(hBoxTitleBar);
         bp.setBottom(hBoxButtonBar);
+
         return bp;
     }
 
