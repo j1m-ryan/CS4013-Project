@@ -70,7 +70,15 @@ public class Property {
     public String getEstimatedMarketValue() {
         return estimatedMarketValue;
     }
-	
+
+    /**
+	 *Getter method for Principal Private Residenc
+     * @return value of isPrincipalPrivateResidence
+     */
+     public boolean getPrincipalPrivateResidenceStatus(){
+        return isPrincipalPrivateResidence;
+    }
+
     /**
     * Setter for Estimate Market Value
     * param estimateMarketValue set estimated market value

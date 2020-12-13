@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.StringTokenizer;
@@ -183,54 +185,6 @@ public class SystemManager  {
         taxTable = new TaxTable(fixedCost, flatCharge, penaltyRate, locationCat, locationRates, valueRates, valueRangeMaxs);
     }
 
-/** 
-        double[] propValueRates;
-        private ArrayList<double[]> propValueRanges = new ArrayList<double[]>();
-        private HashMap<String, Double> locatoinCatAndRates = new HashMap<String, Double>();
-        
-        String row6 = taxTableData.get(5);
-        String row7 = taxTableData.get(6);
-        String row8 = taxTableData.get(7);
-
-        StringTokenizer temp = new StringTokenizer(data, ",");
-        String currentToken = temp.nextToken();
-        ArrayList<String> locationCat = new ArrayList<String>();
-        ArrayList<Double> locationRates = new ArrayList<Double>();
-        if(currentToken.equalsIgnoreCase("flat Charge")){
-            taxTable.setFlatCharge(Double.parseDouble(currentToken));
-            currentToken = temp.nextToken();
-        } else if(currentToken.equalsIgnoreCase("penalty rate")){
-            taxTable.setPenaltyRate(Double.parseDouble(currentToken));
-            currentToken = temp.nextToken();
-        } else if(currentToken.equalsIgnoreCase("location categories")){
-            while(!currentToken.equalsIgnoreCase("location rates")){
-                locationCat.add(currentToken);
-                currentToken = temp.nextToken();
-            }
-        } else if(currentToken.equalsIgnoreCase("location rates")){
-            while(!currentToken.equalsIgnoreCase("property value rates")){
-                locationRates.add(Double.parseDouble(currentToken));
-                currentToken = temp.nextToken();
-            }
-        } else if(currentToken.equalsIgnoreCase("property value rates")){
-            while(!currentToken.equalsIgnoreCase("Property Value Range min")){
-                locationRates.add(Double.parseDouble(currentToken));
-                currentToken = temp.nextToken();
-            }
-        } else if(currentToken.equalsIgnoreCase("Property Value Range min")){
-            while(!currentToken.equalsIgnoreCase("Property Value Range min")){
-                locationRates.add(Double.parseDouble(currentToken));
-                currentToken = temp.nextToken();
-            }
-        } else if(currentToken.equalsIgnoreCase("Property Value Range min")){
-            while(!currentToken.equalsIgnoreCase("end tax table")){
-                locationRates.add(Double.parseDouble(currentToken));
-                currentToken = temp.nextToken();
-            }
-        }
-
-    }
-*/
     // method to register department employee
     public void registerEmployee(String name, String workId, String password){
         employees.put(workId, (new Employee(name, workId, password)));
@@ -366,18 +320,12 @@ public class SystemManager  {
         return matchingRecords;
     }
 
-    // Overloaded with Eircode   (not sure about the year as it was not mentioned in specs)
-    // method to get all over due properties for specified year and eircode area
-    public ArrayList<Record> getAllOverDueProps(int year, String eircodeRoutingKey){
+    // Overloaded with Eircode 
+    // method to get all over due properties for speicified eircode routing key
+    public ArrayList<Record> getAllOverDueProps( String eircodeRoutingKey){
         if(eircodeToLocation.containsKey(eircodeRoutingKey)){
-            ArrayList<Record> allDueProps = getDataFromPaymentRecords(year, "unpaid");
-            ArrayList<Record> ericodeMatchedProps = new ArrayList<Record>();
-            for(Record rec : allDueProps){
-                if(rec.getEircodeRoutingKey().equalsIgnoreCase(eircodeRoutingKey)){
-                    ericodeMatchedProps.add(rec);
-                }
-            }
-            return ericodeMatchedProps;
+            ArrayList<Record> allDueProps = getAreaPaymentRecords(eircodeRoutingKey, "unpaid");
+            return allDueProps;
         }else{
             return new ArrayList<Record>();
         } // will remove the else code and add code later to throw an exception if eircode not found in eircodeToLocation
@@ -395,6 +343,21 @@ public class SystemManager  {
         for(Record rec : paymentRecords.get(year)){
             if(rec.getPaymentStatus().equalsIgnoreCase(searchFor)){
                 matchingRecs.add(rec);
+            }
+        }
+        return matchingRecs;
+    }
+
+    // method to get payment records of matching routing key area for all years for specified paymentStatus
+    public ArrayList<Record> getAreaPaymentRecords(String eircodeRoutingkey, String paymentStatus){
+        ArrayList<Record> matchingRecs = new ArrayList<Record>();
+        for(int year : paymentRecords.keySet()){
+            ArrayList<Record> recs = paymentRecords.get(year);
+            for(Record rec : recs){
+                if(rec.getPaymentStatus().equalsIgnoreCase(paymentStatus)
+                    && rec.getEircodeRoutingKey().equalsIgnoreCase(eircodeRoutingkey)){
+                    matchingRecs.add(rec);
+                }
             }
         }
         return matchingRecs;
@@ -465,11 +428,18 @@ public class SystemManager  {
     
     // method to display tax stats for a specified eircodeRoutingKey 
     // returned is an array of {totalTaxPaid, avgTaxPaid, numOfTaxPaidProperties, percentageOfPropTaxPaid}
-    public double[] getTaxStats(int year, String eircodeRoutingKey){
-        double totalTaxPaid = totalTaxPaid(year, eircodeRoutingKey);
+    public double[] getTaxStats(String eircodeRoutingKey){
+        double totalTaxPaid = totalTaxPaid(eircodeRoutingKey);
         int totalProps = totalNumOfProperties(eircodeRoutingKey);
-        ArrayList<Record> taxNotPaidProps = getAllOverDueProps( year,  eircodeRoutingKey);
-        double numOfTaxPaidProperties = totalProps - taxNotPaidProps.size();
+        ArrayList<Record> taxNotPaidProps = getAllOverDueProps(eircodeRoutingKey);
+        ArrayList<String> uniqueEircodes = new ArrayList<String>();
+        for(Record r : taxNotPaidProps){
+            uniqueEircodes.add(r.getEircode());
+        }
+        Set<String> tempSet = new HashSet<>(uniqueEircodes);
+        uniqueEircodes.clear();
+        uniqueEircodes.addAll(tempSet);
+        double numOfTaxPaidProperties = totalProps - uniqueEircodes.size();
         double avgTaxPaid = totalTaxPaid/numOfTaxPaidProperties;
         double percentageOfPropTaxPaid = ((numOfTaxPaidProperties/totalProps) * 100);
         double[] allCombined = {totalTaxPaid, avgTaxPaid, numOfTaxPaidProperties, percentageOfPropTaxPaid};
@@ -488,11 +458,10 @@ public class SystemManager  {
     }
 
     // method to get total tax paid by all properties in specified eircodeRoutingKey
-    private double totalTaxPaid(int year, String eircodeRoutingKey){
-        ArrayList<Record> taxPaidProps = getDataFromPaymentRecords(year,  "paid");
-        ArrayList<Record> filteredRecords =getMatchingEircoderecords(taxPaidProps, eircodeRoutingKey);
+    private double totalTaxPaid(String eircodeRoutingKey){
+        ArrayList<Record> taxPaidProps = getAreaPaymentRecords(eircodeRoutingKey, "paid");
         double sum = 0;
-        for(Record rec : filteredRecords){
+        for(Record rec : taxPaidProps){
             sum += rec.getTaxAmount();
         }
         return sum;
@@ -614,8 +583,40 @@ public class SystemManager  {
         return eircodeToLocation.get(key);
     }
 
-    /**
+    public double totalTaxDue(String ppsNum){
+        ArrayList<Record> allDueRecords = getOwnersDuePropsRecords(ppsNum);
+        double sum = 0;
+        for(Record r : allDueRecords){
+            sum += r.getTaxAmount();
+        }
+        return sum;
+    }
+    
+    public  Set<Integer> getOwnerYearsUnpaid(String ppsNum){
+        ArrayList<Record> allDueRecords = getOwnersDuePropsRecords(ppsNum);
+        ArrayList<Integer> years = new ArrayList<Integer>();
+        for(Record r : allDueRecords){
+            years.add(r.getYear());
+        }
+        Set<Integer> uniqueYears = new HashSet<>(years);
+        return uniqueYears;
+    }
 
+    
+    public Set<Integer> getYearsUnpaidDepartment(){
+        ArrayList<Integer> years = new ArrayList<Integer>();
+        ArrayList<Record> recs = new ArrayList<Record>();
+        for(int year : paymentRecords.keySet()){ 
+            recs.addAll(getDataFromPaymentRecords(year, "unpaid"));
+        }
+        for(Record r : recs){
+            years.add(r.getYear());
+        }
+        Set<Integer> uniqueYears = new HashSet<>(years);
+        return uniqueYears;
+    }
+
+    /**
     private void updatePropertyData(Property property){}
 
     private void updateOwners(){}
