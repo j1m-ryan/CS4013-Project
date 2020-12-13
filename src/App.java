@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Set;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,18 +34,34 @@ import javafx.stage.Stage;
 public class App extends Application {
     Scene scnWelcome, scnAbout, scnLogin, scnSignUp, scnDepLogin, scnDash, scnDepDash, scnRegProp, scnPayTax,
             scnViewProp, scnPrevPayments, scnOverdueProp, scnPropTaxStat, scnPayData, scnYearBalance, scnPropBalance,
-            scnOverduePropTable, scnPropPayment, scnProp, scnDepSignUp;
+            scnOverduePropTable, scnPropPayment, scnProp, scnDepSignUp, scnStatView;
     SystemManager sm;
+    CSVReader reader;
     Owner currentOwner;
     Employee currentEmployee;
 
     public static void main(String args[]) {
+
+        // read from CSV files
+
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         sm = new SystemManager();
+        reader = new CSVReader();
+        ArrayList<String> eircodes = reader.readLinesFromFile("data/eircodesAndCounties.csv");
+        ArrayList<String> propertiesData = reader.readLinesFromFile("data/registeredProperties.csv");
+        ArrayList<String> ownersData = reader.readLinesFromFile("data/registeredOwners.csv");
+        ArrayList<String> ownerPropertylinksData = reader.readLinesFromFile("data/ownerPropertylinks.csv");
+        ArrayList<String> recordsData = reader.readLinesFromFile("data/registeredPaymentRecords.csv");
+        ArrayList<String> employeesData = reader.readLinesFromFile("data/registeredEmployees.csv");
+        ArrayList<String> preBuiltTaxTable = reader.readLinesFromFile("data/preBuiltTaxTable.csv");
+        // load system with already registered data
+        sm.loadAllRegisteredData(propertiesData, ownersData, ownerPropertylinksData, recordsData, eircodes,
+                employeesData, preBuiltTaxTable);
+
         primaryStage.setTitle("Property Management System");
         primaryStage.getIcons().add(new Image("file:house.png"));
         scnWelcome = makeWelcomeScene(primaryStage);
@@ -366,7 +382,7 @@ public class App extends Application {
         buttons.addAll(
                 new ArrayList<Button>(Arrays.asList(btnRegProperty, btnPayTax, btnViewProperty, btnPrevPayment)));
         for (Button b : buttons) {
-            b.setMinWidth(150);
+            b.setMinWidth(175);
         }
 
         btnGrid.add(btnRegProperty, 0, 0);
@@ -405,11 +421,8 @@ public class App extends Application {
             primaryStage.setScene(scnViewProp);
         });
 
-        ArrayList<String> properties = sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum());
-        double total = 0;
-        for (String s : properties) {
-            total += sm.calculateTax(s);
-        }
+        double total = sm.totalTaxDue(currentOwner.getPpsNum());
+
         String displayTotal = Double.toString(total);
         Label lblTotalTax = new Label("Total Tax Due:");
         btnGrid.add(lblTotalTax, 0, 3);
@@ -428,11 +441,13 @@ public class App extends Application {
         BorderPane bp = makeNewBorderPaneWithBtnBar("Department Dashboard", btnBack);
         GridPane grid = makeNewGridPane();
         Label lblWorkID = new Label("Work ID: " + currentEmployee.getWorkId());
+        Label lblName = new Label("Name: " + currentEmployee.getName());
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
         BorderPane bpTOP = new BorderPane();
         bpTOP.setCenter(lblTitle);
         bpTOP.setRight(lblWorkID);
+        bpTOP.setLeft(lblName);
         BorderPane.setMargin(bpTOP, new Insets(12, 12, 12, 12));
         bp.setCenter(grid);
 
@@ -448,7 +463,7 @@ public class App extends Application {
         Button btnPayData = new Button("View Property Tax Payment Data");
         buttons.addAll(new ArrayList<Button>(Arrays.asList(btnOverdueProp, btnPropTaxStat, btnPayData)));
         for (Button b : buttons) {
-            b.setMinWidth(250);
+            b.setMinWidth(270);
         }
 
         btnGrid.add(btnOverdueProp, 0, 0);
@@ -610,7 +625,11 @@ public class App extends Application {
         ObservableList<String> optProperties = FXCollections
                 .observableArrayList(sm.getOwnerPropertiesEircodes(currentOwner.getPpsNum()));
         final ComboBox<String> cBoxProperties = new ComboBox<>(optProperties);
+        ObservableList<String> optYears = FXCollections.observableArrayList(new ArrayList<String>());
+        ComboBox<String> cBoxYears = new ComboBox<>(optYears);
+
         grid.add(cBoxProperties, 1, 1);
+        grid.add(cBoxYears, 2, 1);
 
         Label lblBal = new Label("Balance Due :");
         grid.add(lblBal, 0, 2);
@@ -622,15 +641,29 @@ public class App extends Application {
         cBoxProperties.setOnAction(e -> {
             if (cBoxProperties.getValue() == null)
                 return;
+            Set<Integer> numSet = sm.getPropertyYearsUnpaid(cBoxProperties.getValue());
+            ArrayList<String> stringList = new ArrayList<>();
+            for (int i : numSet) {
+                stringList.add(String.valueOf(i));
+            }
+            ObservableList<String> optYearsNext = FXCollections.observableArrayList(stringList);
+            cBoxYears.setItems(optYearsNext);
             bal.setText(Double.toString(sm.calculateTax(cBoxProperties.getValue())));
         });
         bp.setCenter(grid);
 
         btnPay.setOnAction(e -> {
             if (cBoxProperties.getValue() == null) {
+                Alert a = makeAlert("You must select a property to pay!", "No property selected", AlertType.ERROR);
+                a.show();
                 return;
             }
-            sm.makePayment(Calendar.getInstance().get(Calendar.YEAR), cBoxProperties.getValue());
+            if (cBoxYears.getValue() == null) {
+                Alert a = makeAlert("You must select a year to pay!", "No year selected", AlertType.ERROR);
+                a.show();
+                return;
+            }
+            sm.makePayment(Integer.parseInt(cBoxYears.getValue()), cBoxProperties.getValue());
             scnPrevPayments = makePrevPayments(primaryStage);
             scnPrevPayments.getStylesheets().add("style.css");
             primaryStage.setScene(scnPrevPayments);
@@ -844,10 +877,13 @@ public class App extends Application {
         });
         // Need to go back and check if prefix is valid using system manager
         Label lblWorkID = new Label("Work ID: " + currentEmployee.getWorkId());
+        Label name = new Label("Name: " + currentEmployee.getName());
+
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
         BorderPane bpTOP = new BorderPane();
         bpTOP.setCenter(lblTitle);
+        bpTOP.setLeft(name);
         bpTOP.setRight(lblWorkID);
         BorderPane.setMargin(bpTOP, new Insets(12, 12, 12, 12));
         bp.setTop(bpTOP);
@@ -864,13 +900,23 @@ public class App extends Application {
         topGrid.add(txtEircodePrefix, 0, 1);
         TextField userTextField = new TextField();
         topGrid.add(userTextField, 1, 1);
-
-        ObservableList<String> optYears = FXCollections.observableArrayList("2020", "2019", "2018");
+        Set<Integer> years = sm.getYearsUnpaidDepartment();
+        ArrayList<Integer> targetList = new ArrayList<>(years);
+        ArrayList<String> targetListAsStrings = new ArrayList<String>();
+        for (int i : targetList) {
+            targetListAsStrings.add(String.valueOf(i));
+        }
+        ObservableList<String> optYears = FXCollections.observableArrayList(targetListAsStrings);
         final ComboBox<String> cBoxYear = new ComboBox<>(optYears);
         topGrid.add(cBoxYear, 1, 0);
         cBoxYear.setMinWidth(200);
         btnConfirm.setOnAction(e -> {
+            String eircodePref = userTextField.getText().trim().toUpperCase();
             if (cBoxYear.getValue() == null) {
+                return;
+            } else if (eircodePref.length() != 0 && !sm.isValidEircodeRouteKey(eircodePref)) {
+                Alert a = makeAlert("Eircode route key is invalid!", "Route key invalid", AlertType.ERROR);
+                a.show();
                 return;
             } else if (userTextField.getText() == null || userTextField.getText().trim().isEmpty()) {
                 scnPropBalance = makeOverduePropTableScene(primaryStage, cBoxYear.getValue());
@@ -931,7 +977,7 @@ public class App extends Application {
 
     public Scene makeOverduePropTableScene(Stage primaryStage, String yearIn, String eircodeprefIn) {
         Button btnBack = new Button("Back");
-        String eircodeLocation = "DEFAULT MUST CHANGE";
+        String eircodeLocation = sm.routeKeyLocation(eircodeprefIn);
         String titleText = "View all overdue properties in the year " + yearIn + " at " + eircodeLocation;
         BorderPane bp = makeBorderPaneWithBtnBarAndTable(titleText, btnBack, "Eircode", "Address", "Owners", "Value",
                 "Tax Due");
@@ -983,12 +1029,17 @@ public class App extends Application {
             scnDepDash.getStylesheets().add("style.css");
             primaryStage.setScene(scnDepDash);
         });
-        Label lblWorkID = new Label("Work ID:");
+
+        Label lblWorkID = new Label("Work ID: " + currentEmployee.getWorkId());
+        Label name = new Label("Name: " + currentEmployee.getName());
+
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
         BorderPane bpTOP = new BorderPane();
         bpTOP.setCenter(lblTitle);
         bpTOP.setRight(lblWorkID);
+        bpTOP.setLeft(name);
+
         BorderPane.setMargin(bpTOP, new Insets(12, 12, 12, 12));
         bp.setTop(bpTOP);
 
@@ -1004,6 +1055,64 @@ public class App extends Application {
         topGrid.add(btnConfirm, 2, 1);
         bp.setCenter(bpCENTER);
         bp.setTop(bpTOP);
+        btnConfirm.setOnAction(e -> {
+            String eircodeRoutKey = userTextField.getText().trim().toUpperCase();
+            if (!sm.isValidEircodeRouteKey(eircodeRoutKey)) {
+                Alert a = makeAlert("Eircode route key is invalid!", "Route key invalid", AlertType.ERROR);
+                a.show();
+                return;
+            }
+            scnStatView = makePropTaxStatView(primaryStage, eircodeRoutKey);
+            scnStatView.getStylesheets().add("style.css");
+            primaryStage.setScene(scnStatView);
+        });
+        return new Scene(bp);
+    }
+
+    private Scene makePropTaxStatView(Stage primaryStage, String eircodeRoutKey) {
+        double[] taxStats = sm.getTaxStats(eircodeRoutKey);
+        Button btnBack = new Button("Back");
+        String area = sm.routeKeyLocation(eircodeRoutKey);
+        btnBack.setOnAction(e -> {
+            scnPropTaxStat = makePropTaxStat(primaryStage);
+            scnPropTaxStat.getStylesheets().add("style.css");
+            primaryStage.setScene(scnPropTaxStat);
+        });
+
+        BorderPane bp = makeNewBorderPaneWithBtnBar("Property Tax Stats for " + area, btnBack);
+        GridPane grid = makeNewGridPane();
+        // , , , percentageOfPropTaxPaid
+        Label totalTaxPaid = new Label("Total Tax Paid:");
+        grid.add(totalTaxPaid, 0, 1);
+        Text txtPPSN = new Text();
+        txtPPSN.setText(Double.toString(taxStats[0]));
+        grid.add(txtPPSN, 1, 1);
+
+        Label avgTaxPaid = new Label("Avg Tax Paid:");
+        grid.add(avgTaxPaid, 0, 2);
+        Text txtEircode = new Text();
+        txtEircode.setText(Double.toString(taxStats[1]));
+        grid.add(txtEircode, 1, 2);
+
+        Label numOfTaxPaidProperties = new Label("Num Of Tax Paid Properties:");
+        grid.add(numOfTaxPaidProperties, 0, 3);
+        Text txtAddrs = new Text();
+        txtAddrs.setText(Double.toString(taxStats[2]));
+        grid.add(txtAddrs, 1, 3);
+
+        Label percentageOfPropTaxPaid = new Label("Percentage Of Prop Tax Paid:");
+        grid.add(percentageOfPropTaxPaid, 0, 4);
+        Text txtLocationCategory = new Text();
+        txtLocationCategory.setText(Double.toString(taxStats[3]));
+        grid.add(txtLocationCategory, 1, 4);
+
+        bp.setCenter(grid);
+        btnBack.setOnAction(e -> {
+            scnPropTaxStat = makePropTaxStat(primaryStage);
+            scnPropTaxStat.getStylesheets().add("style.css");
+            primaryStage.setScene(scnPropTaxStat);
+        });
+
         return new Scene(bp);
     }
 
@@ -1055,6 +1164,38 @@ public class App extends Application {
             scnPayData.getStylesheets().add("style.css");
             primaryStage.setScene(scnPayData);
         });
+        ArrayList<Record> paidRecords = sm.getOwnersPaidPropsRecords(ppsn);
+        ArrayList<Record> unpaidRecords = sm.getOwnersDuePropsRecords(ppsn);
+        for (Record r : unpaidRecords) {
+            System.out.println(r.getPaymentStatus());
+            paidRecords.add(r);
+        }
+
+        TableView<Record> table = new TableView<>();
+
+        TableColumn<Record, String> eircode = new TableColumn<>("Eircode");
+        TableColumn<Record, String> eircodeRoutingKey = new TableColumn<>("Eircode Routing Key");
+        TableColumn<Record, Integer> year = new TableColumn<>("Year");
+
+        eircode.setSortable(false);
+        eircodeRoutingKey.setSortable(false);
+        year.setSortable(false);
+
+        table.getColumns().add(eircode);
+        table.getColumns().add(eircodeRoutingKey);
+        table.getColumns().add(year);
+
+        ObservableList<Record> obslist = FXCollections.observableArrayList();
+        for (Record p : paidRecords) {
+            obslist.add(p);
+        }
+        eircode.setCellValueFactory(new PropertyValueFactory<Record, String>("eircode"));
+        eircodeRoutingKey.setCellValueFactory(new PropertyValueFactory<Record, String>("eircodeRoutingKey"));
+        year.setCellValueFactory(new PropertyValueFactory<Record, Integer>("year"));
+
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setItems(obslist);
+        bp.setCenter(table);
         return new Scene(bp);
     }
 
@@ -1078,11 +1219,14 @@ public class App extends Application {
             primaryStage.setScene(scnDepDash);
         });
         Label lblWorkID = new Label("Work ID: " + currentEmployee.getWorkId());
+        Label name = new Label("Name: " + currentEmployee.getName());
+
         HBox hboxTitleBar = ((HBox) bp.getTop());
         Label lblTitle = ((Label) hboxTitleBar.getChildren().get(0));
         BorderPane bpTOP = new BorderPane();
         bpTOP.setCenter(lblTitle);
         bpTOP.setRight(lblWorkID);
+        bpTOP.setLeft(name);
         BorderPane.setMargin(bpTOP, new Insets(12, 12, 12, 12));
         bp.setTop(bpTOP);
 
@@ -1109,12 +1253,24 @@ public class App extends Application {
             if (ppsTextField.getText().equals("")) {
                 return;
             }
+            if (!sm.isValidppsNum(ppsTextField.getText().trim().toUpperCase())) {
+                Alert a = makeAlert("This is not a valid PPS numbe", "PPS Invalid", AlertType.ERROR);
+                a.show();
+                return;
+            }
             scnPropPayment = makeViewPropPaymentTableByPPSNScene(primaryStage, ppsTextField.getText());
             scnPropPayment.getStylesheets().add("style.css");
             primaryStage.setScene(scnPropPayment);
         });
         btnConfirmEircode.setOnAction(e -> {
             if (eircodeTextField.getText().equals("")) {
+                return;
+            }
+            if (!sm.isValidEircode(eircodeTextField.getText().trim().toUpperCase())) {
+                Alert a = makeAlert(
+                        "This Eircode is invalid\nValid Eircodes have the following properties:\nThey begin with an valid eircode prefix such as V95\nThey contain only alpha numeric characters\nThey are 7 characters long\n*Example: V95EY99",
+                        "Eircode Invalid", AlertType.ERROR);
+                a.show();
                 return;
             }
             scnPropPayment = makeViewPropPaymentTableByEircodeScene(primaryStage, eircodeTextField.getText());
