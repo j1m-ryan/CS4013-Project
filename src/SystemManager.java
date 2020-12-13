@@ -591,8 +591,9 @@ public class SystemManager  {
         }
         return sum;
     }
-    
-    public  Set<Integer> getOwnerYearsUnpaid(String ppsNum){
+
+    // method to get years for which all properties of owner are due tax
+    public  Set<Integer> getOwnerYearsUnpaidAllProps(String ppsNum){
         ArrayList<Record> allDueRecords = getOwnersDuePropsRecords(ppsNum);
         ArrayList<Integer> years = new ArrayList<Integer>();
         for(Record r : allDueRecords){
@@ -602,6 +603,22 @@ public class SystemManager  {
         return uniqueYears;
     }
 
+    // method to get years for which the property is due tax
+    public  Set<Integer> getPropertyYearsUnpaid(String eircode){
+        ArrayList<Integer> years = new ArrayList<Integer>();
+        ArrayList<Record> recs = getPropertyRecords(eircode, "unpaid");
+        for(Record r : recs){
+            System.out.println(r.getEircode());
+            System.out.println(r.getPaymentStatus());
+            System.out.println(r.getYear());
+            System.out.println(r.getTaxAmount());
+        }
+        for(Record r : recs){
+            years.add(r.getYear());
+        }
+        Set<Integer> uniqueYears = new HashSet<>(years);
+        return uniqueYears;
+    }
     
     public Set<Integer> getYearsUnpaidDepartment(){
         ArrayList<Integer> years = new ArrayList<Integer>();
