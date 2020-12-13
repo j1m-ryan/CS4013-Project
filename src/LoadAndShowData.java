@@ -18,9 +18,10 @@ public class LoadAndShowData {
         ArrayList<String> ownerPropertylinksData = reader.readLinesFromFile("data/ownerPropertylinks.csv");
         ArrayList<String> recordsData = reader.readLinesFromFile("data/registeredPaymentRecords.csv");
         ArrayList<String> employeesData = reader.readLinesFromFile("data/registeredEmployees.csv");
+        ArrayList<String> preBuiltTaxTable = reader.readLinesFromFile("data/preBuiltTaxTable.csv");
         // load system with already registered  data
         system.loadAllRegisteredData(propertiesData, ownersData, ownerPropertylinksData, recordsData, 
-                                    eircodes,employeesData);
+                                    eircodes,employeesData, preBuiltTaxTable);
         
         
         int year = 2020;

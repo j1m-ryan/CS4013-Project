@@ -1,0 +1,9 @@
+﻿System will ignore first row as instructed,,,,,
+Fixed cost,100,,,,
+Flat charge,100,,,,
+Penalty rate,7,,,,
+Location Categories,City,Large Town,Small Town,Village,Countryside
+Location Rates,100,80,60,50,25
+Property Value Rates,0,0.01,0.02,0.04,
+Property Value Range min,0,150000,400001,650001,
+Property Value Range max,149999,400000,650000,,

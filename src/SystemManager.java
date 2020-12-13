@@ -4,18 +4,18 @@ import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.StringTokenizer;
 public class SystemManager  {
-    HashMap<String, Owner> owners = new HashMap<String, Owner>();
-    HashMap<String, Employee> employees = new HashMap<String, Employee>();
-    HashMap<String, Property> registeredProperties = new HashMap<String, Property>();
-    HashMap<Integer, ArrayList<Record>> paymentRecords = new HashMap<Integer, ArrayList<Record>>();
+    private HashMap<String, Owner> owners = new HashMap<String, Owner>();
+    private HashMap<String, Employee> employees = new HashMap<String, Employee>();
+    private HashMap<String, Property> registeredProperties = new HashMap<String, Property>();
+    private HashMap<Integer, ArrayList<Record>> paymentRecords = new HashMap<Integer, ArrayList<Record>>();
     
-    HashMap<String, String> eircodeToLocation = new HashMap<>();
-    HashMap<String, String> locationToEircode = new HashMap<>();
+    private HashMap<String, String> eircodeToLocation = new HashMap<>();
+    private HashMap<String, String> locationToEircode = new HashMap<>();
     
     private LocalDate currentDate;
-    private int minYear = 1900;
+    private int minYear = 1990;
 
-    
+    private TaxTable taxTable;
 
     public SystemManager(){
         // do nothing for now but later will do something like run() method
@@ -39,7 +39,8 @@ public class SystemManager  {
                                       ArrayList<String> ownerPropertylinks,
                                       ArrayList<String> paymentRecords,
                                       ArrayList<String> eircodesAndCounties,
-                                      ArrayList<String> empolyeesData){
+                                      ArrayList<String> empolyeesData,
+                                      ArrayList<String> preBuiltTaxTable){
         // loading registeredOwners data
         for(String ownerData : ownersData){
             ArrayList<String> separatedData = separateWordsInLine(ownerData);
@@ -71,6 +72,8 @@ public class SystemManager  {
             StringTokenizer temp = new StringTokenizer(employeeData, " ,");
             registerEmployee(temp.nextToken(), temp.nextToken(), temp.nextToken());
         }
+        // loading tax table data
+        loadTaxTableData(preBuiltTaxTable);
     }
 
     // methods to update all database of registered owerns, properties and records
@@ -124,6 +127,110 @@ public class SystemManager  {
         propDetails.get(2),propDetails.get(3), isPrincipalPrivateResidence));
     }
 
+    //method to set tax table 
+    private void loadTaxTableData(ArrayList<String> taxTableData){
+        double fixedCost = 0;
+        double flatCharge = 0;
+        double penaltyRate = 0;
+        ArrayList<String> locationCat = new ArrayList<String>();
+        ArrayList<Double> locationRates = new ArrayList<Double>();
+        ArrayList<Double> valueRates = new ArrayList<Double>();
+        ArrayList<Double> valueRangeMaxs = new ArrayList<Double>();
+        
+        String row1 = taxTableData.get(0);
+        StringTokenizer tokens = new StringTokenizer(row1, ",");
+        tokens.nextToken();
+        fixedCost = Double.parseDouble(tokens.nextToken());
+            
+        String row2 = taxTableData.get(1);
+        tokens = new StringTokenizer(row2, ",");
+        tokens.nextToken();
+        flatCharge = Double.parseDouble(tokens.nextToken());
+        
+        String row3 = taxTableData.get(2);
+        tokens = new StringTokenizer(row3, ",");
+        tokens.nextToken();
+        penaltyRate = Double.parseDouble(tokens.nextToken());
+        
+        String row4 = taxTableData.get(3);
+        tokens = new StringTokenizer(row4, ",");
+        tokens.nextToken();
+        while(tokens.hasMoreTokens()){
+            locationCat.add(tokens.nextToken());
+        }
+
+        String row5 = taxTableData.get(4);
+        tokens = new StringTokenizer(row5, ",");
+        tokens.nextToken();
+        while(tokens.hasMoreTokens()){
+            locationRates.add(Double.parseDouble(tokens.nextToken()));
+        }
+
+        String row6 = taxTableData.get(5);
+        tokens = new StringTokenizer(row6, ",");
+        tokens.nextToken();
+        while(tokens.hasMoreTokens()){
+            valueRates.add(Double.parseDouble(tokens.nextToken()));
+        }
+
+        String row7 = taxTableData.get(6);
+        tokens = new StringTokenizer(row7, ",");
+        tokens.nextToken();
+        while(tokens.hasMoreTokens()){
+            valueRangeMaxs.add(Double.parseDouble(tokens.nextToken()));
+        }
+
+        taxTable = new TaxTable(fixedCost, flatCharge, penaltyRate, locationCat, locationRates, valueRates, valueRangeMaxs);
+    }
+
+/** 
+        double[] propValueRates;
+        private ArrayList<double[]> propValueRanges = new ArrayList<double[]>();
+        private HashMap<String, Double> locatoinCatAndRates = new HashMap<String, Double>();
+        
+        String row6 = taxTableData.get(5);
+        String row7 = taxTableData.get(6);
+        String row8 = taxTableData.get(7);
+
+        StringTokenizer temp = new StringTokenizer(data, ",");
+        String currentToken = temp.nextToken();
+        ArrayList<String> locationCat = new ArrayList<String>();
+        ArrayList<Double> locationRates = new ArrayList<Double>();
+        if(currentToken.equalsIgnoreCase("flat Charge")){
+            taxTable.setFlatCharge(Double.parseDouble(currentToken));
+            currentToken = temp.nextToken();
+        } else if(currentToken.equalsIgnoreCase("penalty rate")){
+            taxTable.setPenaltyRate(Double.parseDouble(currentToken));
+            currentToken = temp.nextToken();
+        } else if(currentToken.equalsIgnoreCase("location categories")){
+            while(!currentToken.equalsIgnoreCase("location rates")){
+                locationCat.add(currentToken);
+                currentToken = temp.nextToken();
+            }
+        } else if(currentToken.equalsIgnoreCase("location rates")){
+            while(!currentToken.equalsIgnoreCase("property value rates")){
+                locationRates.add(Double.parseDouble(currentToken));
+                currentToken = temp.nextToken();
+            }
+        } else if(currentToken.equalsIgnoreCase("property value rates")){
+            while(!currentToken.equalsIgnoreCase("Property Value Range min")){
+                locationRates.add(Double.parseDouble(currentToken));
+                currentToken = temp.nextToken();
+            }
+        } else if(currentToken.equalsIgnoreCase("Property Value Range min")){
+            while(!currentToken.equalsIgnoreCase("Property Value Range min")){
+                locationRates.add(Double.parseDouble(currentToken));
+                currentToken = temp.nextToken();
+            }
+        } else if(currentToken.equalsIgnoreCase("Property Value Range min")){
+            while(!currentToken.equalsIgnoreCase("end tax table")){
+                locationRates.add(Double.parseDouble(currentToken));
+                currentToken = temp.nextToken();
+            }
+        }
+
+    }
+*/
     // method to register department employee
     public void registerEmployee(String name, String workId, String password){
         employees.put(workId, (new Employee(name, workId, password)));
@@ -185,7 +292,39 @@ public class SystemManager  {
 
     // method to calcuclate property tax
     public double calculateTax(String eircode){
-        return 100;
+        double totalCharges = 0;
+        Property property = getPropertyData(eircode);
+        
+        // apply fixed cost
+        totalCharges += taxTable.getFixedCost();
+
+        // apply property value tax 
+        double valueTaxRate = taxTable.getPropertyValueRate(property.getEstimatedMarketValue());
+        double valueTaxAmount = (Double.parseDouble(property.getEstimatedMarketValue()) * valueTaxRate)/100;
+        totalCharges += valueTaxAmount;
+
+        // apply location tax
+        double locationRate = taxTable.getLocationRate(property.getLocationCatgeory());
+        totalCharges += locationRate;
+
+        // if property not the principal private residence then apply flat charge
+        if(!property.getPrincipalPrivateResidenceStatus()){
+            double flatCharge = taxTable.getFlatCharge();
+            totalCharges += flatCharge;
+        }
+
+        // Apply a penalty charge, compounded for each year that a property tax is unpaid. 
+        int totalYearsUnpaid = 0;
+        double penaltyCharge = taxTable.getPenaltyRate();
+        ArrayList<Record> allTaxPaymentRecords = getPaymentRecords(property.getEircode());
+        for(Record rec : allTaxPaymentRecords){
+            if(rec.getPaymentStatus().equalsIgnoreCase("unpaid")){
+                totalYearsUnpaid++;
+            }
+        }
+        totalCharges += (totalYearsUnpaid * penaltyCharge);
+        
+        return totalCharges;
     }
 
     // method to get all over due properties for specified year
@@ -193,7 +332,40 @@ public class SystemManager  {
         return getDataFromPaymentRecords(year, "unpaid");
     }
 
-    
+    //method to return owners all properties paid records
+    public ArrayList<Record> getOwnersPaidPropsRecords(String ppsNum){
+        Owner owner = owners.get(ppsNum);
+        ArrayList<String> propEircodes = owner.getPropertiesEircodes();
+        ArrayList<Record> paidRecords = new ArrayList<Record>();
+        for(String eircode : propEircodes){
+            paidRecords.addAll(getPropertyRecords(eircode, "paid"));
+        }
+        return paidRecords;
+    }
+
+    // method to return owners all properties due records
+    public ArrayList<Record> getOwnersDuePropsRecords(String ppsNum){
+        Owner owner = owners.get(ppsNum);
+        ArrayList<String> propEircodes = owner.getPropertiesEircodes();
+        ArrayList<Record> dueRecords = new ArrayList<Record>();
+        for(String eircode : propEircodes){
+            dueRecords.addAll(getPropertyRecords(eircode, "unpaid"));
+        }
+        return dueRecords;
+    }
+
+    // method to get all paid or unpaid records for chosen
+    public ArrayList<Record> getPropertyRecords(String eircode, String paymentStatus){
+        ArrayList<Record> allRecords = getPaymentRecords(eircode);
+        ArrayList<Record> matchingRecords = new ArrayList<Record>();
+        for (Record r : allRecords){
+            if(r.getPaymentStatus().equalsIgnoreCase(paymentStatus)){
+                matchingRecords.add(r);
+            }
+        }
+        return matchingRecords;
+    }
+
     // Overloaded with Eircode   (not sure about the year as it was not mentioned in specs)
     // method to get all over due properties for specified year and eircode area
     public ArrayList<Record> getAllOverDueProps(int year, String eircodeRoutingKey){
@@ -240,9 +412,8 @@ public class SystemManager  {
         
     // method to get property payments records for all registered years
     public ArrayList<Record> getPaymentRecords(String eircode){
-        currentDate = LocalDate.now();
         ArrayList<Record> combinedRecs = new ArrayList<Record>();
-        for(int year = minYear;year <= currentDate.getYear(); year++){
+        for(Integer year : paymentRecords.keySet()){
             combinedRecs.addAll(getPaymentRecords(year, eircode));
         }
         return combinedRecs;
@@ -257,8 +428,28 @@ public class SystemManager  {
                     matchingRecs.add(rec);
                 }
             }
+            
         }
         return matchingRecs; 
+    }
+
+    // method to get records of owner's all properties records
+    public ArrayList<Record> getOwnerAllRecords(String ppsNum){
+        ArrayList<String> eircodes = getOwnerPropertiesEircodes(ppsNum);
+        ArrayList<Record> matchingRecs = new ArrayList<Record>();
+        for(String eircode : eircodes){
+            matchingRecs.addAll(getPaymentRecords(eircode));
+        }
+        return matchingRecs;
+    }
+
+    // method to send arraylist of all years for which system has records
+    public ArrayList<Integer> getRecordsYears(){
+        ArrayList<Integer> years = new ArrayList<Integer>();
+        for(Integer year : paymentRecords.keySet()){
+            years.add(year);
+        }
+        return years;
     }
 
     // method to pay the tax for specified year of a property
@@ -338,11 +529,30 @@ public class SystemManager  {
         return false;
     }
 
+    // method to check if owner with matching pps number exists in database
+    public boolean employeeExists(String workId) {
+        if (employees.containsKey(workId)) {
+            return true;
+        }
+        return false;
+    }
+
     // method to check if login details match the one's on database
     public boolean loginVerification(String ppsNum, String pass) {
         if(ownerExists(ppsNum)){
             String accCorrectPass = owners.get(ppsNum).getPassword();
             if(accCorrectPass.equalsIgnoreCase(pass)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // method to check if login details match the one's on database for an employee
+    public boolean depLoginVerification(String workId, String password) {
+        if (employeeExists(workId)) {
+            String accCorrectPass = employees.get(workId).getPassword();
+            if (accCorrectPass.equalsIgnoreCase(password)) {
                 return true;
             }
         }
@@ -355,9 +565,20 @@ public class SystemManager  {
         // will be throwing error if not found for later
     }
 
+    // returns employee object if an employee with matching workId is found
+    public Employee getEmployee(String workId) {
+        return employees.get(workId);
+        // will be throwing error if not found for later
+    }
+
     // 7 digits and 1 or 2 letters
     public boolean isValidppsNum(String ppsNum) {
         return ppsNum.matches("[\\d]{7}[ A-Za-z]{1,2}");
+    }
+
+    // 8 digits
+    public boolean isValidWID(String ppsNum) {
+        return ppsNum.matches("[\\d]{8}");
     }
 
     public boolean isValidPassword(String password) {
@@ -372,6 +593,27 @@ public class SystemManager  {
             return false;
         }
     }
+
+    // check if an eircode contains the routing key, is 7 chars long and is made of letters and numbers only
+    public boolean isValidEircode(String eircode) {
+        String eircodeRountingKey = eircode.substring(0, 3);
+        if (!eircodeToLocation.containsKey(eircodeRountingKey)) {
+            return false;
+        }
+        return eircode.matches("[a-zA-Z0-9]{7}");
+    }
+
+    // method to check if an key is a valid eircode routing key
+    public boolean isValidEircodeRouteKey(String key){
+        if(eircodeToLocation.containsKey(key)){return true;}
+        return false;
+    }
+
+    // method to return county name of making eircode routing key
+    public String routeKeyLocation(String key){
+        return eircodeToLocation.get(key);
+    }
+
     /**
 
     private void updatePropertyData(Property property){}
