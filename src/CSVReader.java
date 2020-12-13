@@ -1,3 +1,9 @@
+
+/**
+ * A Class that loads information from CSV files
+ * @version Final
+ */
+
 import java.util.ArrayList;
 
 import org.w3c.dom.css.CSSCharsetRule;
@@ -11,13 +17,13 @@ public class CSVReader{
         // do nothing
     }
     
-    
-    /** 
+    /**
+     * Reading program to read the csv files lines ie helper program
      * @param fileLocation
      * @return ArrayList<String>
      * @throws IOException
      */
-    // reading program to read the csv files lines ie helper program
+
     public ArrayList<String> readLinesFromFile(String fileLocation) throws IOException{
                 
         // open file input stream

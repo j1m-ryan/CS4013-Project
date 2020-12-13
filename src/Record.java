@@ -1,3 +1,8 @@
+/**
+ * A Class that Represents a Record
+ * 
+ * @version Final
+ */
 public class Record {
     private String eircode = "";
     private String eircodeRoutingKey = "";

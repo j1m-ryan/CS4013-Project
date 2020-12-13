@@ -274,7 +274,7 @@ public class CliMenu {
     }
 
     /**
-     * 
+     * Method to create a Pay Tax menu
      */
     public void pay() {
         System.out.println("Pay Tax Screen");
@@ -306,6 +306,9 @@ public class CliMenu {
         }
     }
 
+    /**
+     * Method to make a previous payments menu
+     */
     public void prevPayments() {
         System.out.println("Previous Payments");
         ArrayList<Record> paidRecords = new ArrayList<Record>();
@@ -331,6 +334,9 @@ public class CliMenu {
         }
     }
 
+    /**
+     * Method to make a balancing statement menu
+     */
     public void balStatement() {
         System.out.println("Balancing Statement");
         ArrayList<Record> unpaidRecords = new ArrayList<Record>();
@@ -356,6 +362,7 @@ public class CliMenu {
     }
 
     /**
+     * Method to make a Department Login menu
      * @throws IOException
      */
     // Department Side
@@ -391,6 +398,9 @@ public class CliMenu {
         depDash();
     }
 
+    /**
+     * Method to make a Derpartment Signup menu
+     */
     public void depSignup() {
         System.out.println("Department Registration Menu");
         System.out.println("Enter your Work ID: ");
@@ -415,6 +425,9 @@ public class CliMenu {
         }
     }
 
+    /**
+     * Method to make a Department Dashboard menu
+     */
     public void depDash() {
         boolean more = true;
 
@@ -435,6 +448,9 @@ public class CliMenu {
         }
     }
 
+    /**
+     * Method to make a View Overdue Properties menu
+     */
     public void viewOverdueProp() {
         System.out.println("Overdue Properties");
         ArrayList<Record> unpaidRecords = new ArrayList<Record>();
@@ -460,6 +476,9 @@ public class CliMenu {
 
     }
 
+        /**
+         * Method to make a Property Tax Statistics by Area menu
+         */
     public void PropTaxStats() {
         System.out.println("Property Tax Statistics By Area");
         System.out.println("Please enter the Eircode Routing Key of the area you wish to view the statistics of:");
@@ -472,6 +491,9 @@ public class CliMenu {
         }
     }
 
+    /**
+     * Method to make a Tax Payment Data
+     */
     public void ViewPropTaxData() {
         System.out.println("Property Tax Payment Data");
         System.out.println("Please enter Eircode Routing key");
