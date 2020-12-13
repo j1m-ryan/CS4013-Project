@@ -1,3 +1,8 @@
+
+/**
+ * A Class that creates a Command Line Menu
+ * @version Final
+ */
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -18,8 +23,9 @@ public class CliMenu {
         in = new Scanner(System.in);
     }
 
-    
-    /** 
+    /**
+     * Method to create initial menu
+     * 
      * @throws IOException
      */
     public void run() throws IOException {
@@ -57,13 +63,17 @@ public class CliMenu {
         }
     }
 
+    /**
+     * Method to print the about details
+     */
     public void about() {
         System.out.println(
                 "Our software company Tax Ireland Solutions Ltd under contract from \nthe Department of Environment has developed this Property Charge Management System. \nThe system will allow property owners to register each of their properties and to pay the \nproperty tax due for the properties. Property tax is a yearly tax on a property and it is due to be \npaid on Jan 1st each year. Property owners are able to view a list of their properties \nand the tax that is due currently per property and also any overdue tax \n(hasn't been paid for a previous year) and are able to query specific previous years and get a balancing statement \nfor any particular year or property. The system maintains a record of all payments of the \nproperty charge on a yearly basis.");
     }
 
-    
-    /** 
+    /**
+     * Method to create a User login screen menu
+     * 
      * @throws IOException
      */
     public void login() throws IOException {
@@ -97,6 +107,9 @@ public class CliMenu {
         dash();
     }
 
+    /**
+     * Method to create a User Signup menu
+     */
     public void signup() {
         System.out.println("Signup Menu");
         System.out.println("Enter your PPS number: ");
@@ -121,6 +134,9 @@ public class CliMenu {
         }
     }
 
+    /**
+     * Method to create a User Dashboard menu
+     */
     public void dash() {
         boolean more = true;
         while (more) {
@@ -145,6 +161,9 @@ public class CliMenu {
         }
     }
 
+    /**
+     * Method to create a Register User menu
+     */
     public void register() {
         System.out.println("Register Property Menu");
         ArrayList<String> additionalOwners = new ArrayList<>();
@@ -227,6 +246,7 @@ public class CliMenu {
         }
     }
 
+    /** Method to create a View Property menu */
     public void view() {
         System.out.println("View Property Screen");
         ArrayList<String> properties = sm.getOwnerPropertiesEircodes(owner.getPpsNum());
@@ -253,6 +273,9 @@ public class CliMenu {
         }
     }
 
+    /**
+     * 
+     */
     public void pay() {
         System.out.println("Pay Tax Screen");
         ArrayList<String> properties = sm.getOwnerPropertiesEircodes(owner.getPpsNum());
@@ -332,8 +355,7 @@ public class CliMenu {
         }
     }
 
-    
-    /** 
+    /**
      * @throws IOException
      */
     // Department Side

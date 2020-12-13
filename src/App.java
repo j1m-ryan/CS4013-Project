@@ -31,6 +31,11 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
+/**
+ * A Class to Create a GUI
+ * 
+ * @version Final
+ */
 public class App extends Application {
     Scene scnWelcome, scnAbout, scnLogin, scnSignUp, scnDepLogin, scnDash, scnDepDash, scnRegProp, scnPayTax,
             scnViewProp, scnPrevPayments, scnOverdueProp, scnPropTaxStat, scnPayData, scnYearBalance, scnPropBalance,
@@ -40,9 +45,10 @@ public class App extends Application {
     Owner currentOwner;
     Employee currentEmployee;
 
-    
-    /** 
-     * @param args[]
+    /**
+     * Launches the GUI
+     * 
+     * @param args[] Takes in arguments
      */
     public static void main(String args[]) {
 
@@ -51,9 +57,10 @@ public class App extends Application {
         launch(args);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Initial building of the GUI
+     * 
+     * @param primaryStage Creates the GUI Window
      * @throws Exception
      */
     @Override
@@ -81,9 +88,10 @@ public class App extends Application {
         primaryStage.setMinHeight(500);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Creates initial Welcome Scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      * @throws FileNotFoundException
      */
@@ -118,9 +126,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make About page scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeAboutScene(Stage primaryStage) {
@@ -137,9 +146,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make User Login page scnee
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeLoginScene(Stage primaryStage) {
@@ -200,9 +210,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make User Signup page scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeSignUpScene(Stage primaryStage) {
@@ -266,9 +277,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to create Department Login page scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeDepLoginScene(Stage primaryStage) {
@@ -321,9 +333,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to create Department Signup page Scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeDepSignUpScene(Stage primaryStage) {
@@ -387,9 +400,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to create the User Dashboard Scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeDashScene(Stage primaryStage) {
@@ -481,9 +495,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make Department Dash Scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeDepDashScene(Stage primaryStage) {
@@ -541,9 +556,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make the Register Property page Scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeRegPropScene(Stage primaryStage) {
@@ -663,9 +679,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make the Pay Tax page scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makePayTaxScene(Stage primaryStage) {
@@ -731,9 +748,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make the View Property page Scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeViewPropScene(Stage primaryStage) {
@@ -811,10 +829,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
-     * @param eircode
+    /**
+     * Method to make the individual property view page scene
+     * 
+     * @param primaryStage Creates the GUI Window
+     * @param eircode      Eircode of the location
      * @return Scene
      */
     private Scene makePropScene(Stage primaryStage, String eircode) {
@@ -890,9 +909,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make the Previous Payments page scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makePrevPayments(Stage primaryStage) {
@@ -942,9 +962,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make the Overdue Property view page scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeOverdueProp(Stage primaryStage) {
@@ -1017,10 +1038,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
-     * @param yearIn
+    /**
+     * Method to make the Overdue Property Table page Scene
+     * 
+     * @param primaryStage Creates the GUI Window
+     * @param yearIn       The overdue year for a particular property
      * @return Scene
      */
     public Scene makeOverduePropTableScene(Stage primaryStage, String yearIn) {
@@ -1062,11 +1084,13 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
-     * @param yearIn
-     * @param eircodeprefIn
+    /**
+     * Overloaded Method to make the Overdue Property Table page scene by Eircode
+     * Prefix
+     * 
+     * @param primaryStage  Creates the GUI Window
+     * @param yearIn        The overdue year for a particular property
+     * @param eircodeprefIn The Eircode Prefix
      * @return Scene
      */
     public Scene makeOverduePropTableScene(Stage primaryStage, String yearIn, String eircodeprefIn) {
@@ -1109,9 +1133,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make the Property Tax Statistics by Area page scene
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makePropTaxStat(Stage primaryStage) {
@@ -1168,10 +1193,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
-     * @param eircodeRoutKey
+    /**
+     * Method to make the Property Tax Statistics page by Eircode routing key
+     * 
+     * @param primaryStage   Creates the GUI Window
+     * @param eircodeRoutKey The Eircode routing key
      * @return Scene
      */
     private Scene makePropTaxStatView(Stage primaryStage, String eircodeRoutKey) {
@@ -1221,10 +1247,12 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
-     * @param eircodeIn
+    /**
+     * Method to make the View all Property Payment data page scene for a particular
+     * property
+     * 
+     * @param primaryStage Creates the GUI Window
+     * @param eircodeIn    The Eircode for a property
      * @return Scene
      */
     public Scene makeViewPropPaymentTableByEircodeScene(Stage primaryStage, String eircodeIn) {
@@ -1265,10 +1293,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
-     * @param ppsn
+    /**
+     * Method to make the View all Property Payment data for a particular User
+     * 
+     * @param primaryStage Creates the GUI Window
+     * @param ppsn         The PPS Number for a given owner
      * @return Scene
      */
     public Scene makeViewPropPaymentTableByPPSNScene(Stage primaryStage, String ppsn) {
@@ -1316,9 +1345,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make the Get Property Tax Payment Data page scene by eircode and
+     * pps
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makePayData(Stage primaryStage) {
@@ -1329,12 +1360,6 @@ public class App extends Application {
         btnConfirmPPS.setMinWidth(150);
         BorderPane bp = makeNewBorderPaneWithBtnBar("Get Property Tax Payment Data", btnBack, btnConfirmEircode,
                 btnConfirmPPS);
-        /*
-         * btnConfirm.setOnAction(e -> {
-         * 
-         * });
-         */
-
         btnBack.setOnAction(e -> {
             scnDepDash = makeDepDashScene(primaryStage);
             scnDepDash.getStylesheets().add("style.css");
@@ -1402,10 +1427,11 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
-     * @param year
+    /**
+     * View properties for a specific year
+     * 
+     * @param primaryStage Creates the GUI Window
+     * @param year         The year for a given set of properties
      * @return Scene
      */
     public Scene makeViewPropScene(Stage primaryStage, String year) {
@@ -1421,9 +1447,10 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param primaryStage
+    /**
+     * Method to make the Yearly Balancing Statement
+     * 
+     * @param primaryStage Creates the GUI Window
      * @return Scene
      */
     public Scene makeYearlyBalancingStatementScene(Stage primaryStage) {
@@ -1479,10 +1506,12 @@ public class App extends Application {
         return new Scene(bp);
     }
 
-    
-    /** 
-     * @param title
-     * @param btns
+    /**
+     * Method to create a template GUI with a Title bar and a Button Bar
+     * 
+     * @param title Takes in a string to use as the title bar
+     * @param btns  Takes in 0 or many buttons to display on the bottom of the
+     *              window
      * @return BorderPane
      */
     // Methods
@@ -1505,8 +1534,9 @@ public class App extends Application {
         return bp;
     }
 
-    
-    /** 
+    /**
+     * Makes a GridPane with a set style format
+     * 
      * @return GridPane
      */
     public GridPane makeNewGridPane() {
@@ -1518,11 +1548,14 @@ public class App extends Application {
         return grid;
     }
 
-    
-    /** 
-     * @param title
-     * @param b
-     * @param tableColumnTitles
+    /**
+     * Method to create a template GUI with a Title bar and a Button Bar
+     * 
+     * @param title             Takes in a string to use as the title bar
+     * @param b                 Takes in 0 or many buttons to display on the bottom
+     *                          of the window
+     * @param tableColumnTitles Takes in a list of titles to use as column headings
+     *                          for the table
      * @return BorderPane
      */
     public BorderPane makeBorderPaneWithBtnBarAndTable(String title, Button b, String... tableColumnTitles) {
@@ -1531,9 +1564,11 @@ public class App extends Application {
         return bp;
     }
 
-    
-    /** 
-     * @param tableColumnTitles
+    /**
+     * Method to create a table template
+     * 
+     * @param tableColumnTitles Takes in a list of titles to use as column headings
+     *                          for the table
      * @return TableView<String>
      */
     public TableView<String> makeTable(String... tableColumnTitles) {
@@ -1549,11 +1584,12 @@ public class App extends Application {
         return tableView;
     }
 
-    
-    /** 
-     * @param alert
-     * @param alertTitle
-     * @param atype
+    /**
+     * Method to make an alert template
+     * 
+     * @param alert      Alert Message
+     * @param alertTitle Title of Alert
+     * @param atype      Type of Alert
      * @return Alert
      */
     public Alert makeAlert(String alert, String alertTitle, AlertType atype) {
