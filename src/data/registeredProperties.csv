@@ -1,5 +1,5 @@
-address,eircode,estimatedValue,locationCategory,principalPrivateResidence
-12 shannon,V14A221,100000,small town,noPPR
-2 ennis,V95T0R3,150000,large town,noPPR
-4 dublin,D01Z100,750000,city,noPPR
-15 shannon,V14B321,100000,small town,noPPR
+ï»¿address,eircode,estimatedValue,locationCategory,principalPrivateResidence
+12Â shannon,V14A221,100000,smallÂ town,TRUE
+2 ennis,V95T0R3,150000,largeÂ town,FALSE
+4Â dublin,D01Z100,750000,city,TRUE
+15Â shannon,V14B321,100000,smallÂ town,FALSE
