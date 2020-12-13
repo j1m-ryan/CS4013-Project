@@ -1,5 +1,11 @@
 ﻿address,eircode,estimatedValue,locationCategory,principalPrivateResidence
-12 shannon,V14A221,100000,small town,TRUE
-2 ennis,V95T0R3,150000,large town,FALSE
-4 dublin,D01Z100,750000,city,TRUE
-15 shannon,V14B321,100000,small town,FALSE
+12 finian park; shannon; Ireland,V14A221,127000,small town,TRUE
+20 killian park; shannon; Ireland,V14A2C9,150000,large town,FALSE
+4 Brookville Ave; limerick; Ireland,V94CX10,350000,city,TRUE
+2 Avondale; ennis; Ireland,V95T0R3,185000,large town,FALSE
+37 ballycasey; shannon; Ireland,V14D2B1,125000,small town,FALSE
+2 shamrock Stree; dublin; Ireland,D01AB01,650000,city,FALSE
+17 Portland row; dublin; Ireland,D04C001,850000,city,TRUE
+20 John paul ave; ennis; Ireland,V95H0F3,245000,large town,TRUE
+2 Clancy park; ennis; Ireland,V95CC30,225000,large town,TRUE
+45 patrick Street; dublin; Ireland,D03AB33,950000,city,TRUE
