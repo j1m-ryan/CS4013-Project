@@ -1,6 +1,6 @@
 # CS4013-Project
 
-Link to github page https://github.com/J1M-RYAN/CS4013-Project
+![Gif of propgram operation](operation.gif)
 
 **Team Members**
 

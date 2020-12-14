@@ -9,7 +9,7 @@ public class TaxTable {
     private double flatCharge = 0;
     private double penaltyRate = 0;
 
-    TaxTable(double fixedCost, double flatCharge, double penaltyRate, ArrayList<String> locationCat,
+    public TaxTable(double fixedCost, double flatCharge, double penaltyRate, ArrayList<String> locationCat,
             ArrayList<Double> locationRates, ArrayList<Double> valueRates, ArrayList<Double> valueRangeMaxs) {
         setFixedCost(fixedCost);
         setPropValueRanges(valueRangeMaxs);
